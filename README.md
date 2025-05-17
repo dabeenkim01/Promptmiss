@@ -36,17 +36,22 @@ promptmiss/
 - `.gitignore`에 venv, pycache, DS_Store 등 추가
 
 ### 2. 모델 설계
-- Prompt 모델: title, content, tags, created_at
+- Prompt 모델: user(FK), title, content, tags, created_at
 - Execution 모델: prompt(FK), user_input, result, executed_at
 
 ### 3. API 개발
 - PromptViewSet, ExecutionViewSet 구현 (ModelViewSet)
 - PromptSerializer, ExecutionSerializer 구현
-- `/api/prompts/`, `/api/executions/` REST API 엔드포인트 생성
+- 사용자 인증 기반 Prompt 생성 (request.user 자동 연동)
+- 로그인 사용자만 프롬프트 생성 가능 (IsAuthenticated)
+- 전체 Prompt 목록 조회 (비로그인 가능, IsAuthenticatedOrReadOnly)
+- 내 프롬프트만 필터링 조회 (`/api/prompts/?mine=true`)
+- `/api/prompts/`, `/api/executions/`, `/api/accounts/` REST API 엔드포인트 생성
 
 ### 4. 테스트
-- DRF 브라우저에서 API 동작 확인 (CRUD 가능)
-- 개발 서버 실행 및 JSON 응답 정상 출력 확인
+- Postman에서 회원가입/로그인/프롬프트 생성 테스트 완료
+- JWT 토큰 기반 인증 테스트 완료 (access + refresh)
+- 인증 사용자 기반 프롬프트 생성 및 조회 정상 작동 확인
 
 ---
 

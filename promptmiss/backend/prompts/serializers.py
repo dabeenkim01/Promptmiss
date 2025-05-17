@@ -5,6 +5,7 @@ class PromptSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prompt
         fields = '__all__'
+        read_only_fields = ['user']
 
 class ExecutionSerializer(serializers.ModelSerializer):
     class Meta:
