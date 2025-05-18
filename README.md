@@ -27,7 +27,7 @@ promptmiss/
 
 ---
 
-## ✅ 현재 완료된 작업 (2025.05.18 기준)
+## ✅ 현재 완료된 작업 (2025.05.18 기준, 최신 반영 완료)
 
 ### 1. Django 백엔드 초기 세팅
 - 프로젝트명: `config`
@@ -67,9 +67,23 @@ promptmiss/
 - 댓글 응답에 작성자 정보 포함
 - 댓글 수정/삭제 시 본인만 가능하도록 커스텀 권한(`IsOwnerOrReadOnly`) 설정
 
+### 6. 프롬프트 수정/삭제 및 권한 처리
+- 프롬프트 수정/삭제 기능 API 구현 (PUT, DELETE)
+- `perform_update`, `perform_destroy`에서 작성자 본인 확인
+- PromptSerializer 사용자 필드 구조 정리 (ID 반환)
+- 사용자 정보 조회 API(`/api/users/me/`) 구현
+- 작성자 외 접근 시 `PermissionDenied` 처리
+
+### 7. 프론트엔드 기능 연동 (Vue)
+- 프롬프트 수정/삭제 페이지 구현 및 API 연동
+- 작성자 본인에게만 수정/삭제 버튼 노출
+- 삭제 시 confirm 처리 및 중복 클릭 방지 로직 추가
+- Tailwind 기반 스타일 통일 (생성/수정/상세)
+- 사용자 정보 localStorage 관리 및 권한 확인 연동
+
 ---
 
 ## 🧭 다음 작업 예정
-- 프론트(Vue)에서 Axios로 API 연동
-- JWT 기반 사용자 인증 기능 연동
+✅ 프론트(Vue)에서 Axios로 API 연동
+✅ JWT 기반 사용자 인증 기능 연동
 - GPT API 호출 연동 (프롬프트 실행 결과 자동 생성)

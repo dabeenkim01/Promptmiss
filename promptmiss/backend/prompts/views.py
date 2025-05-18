@@ -8,25 +8,53 @@ from rest_framework.response import Response
 from .models import Prompt, Execution, Comment
 from .serializers import PromptSerializer, ExecutionSerializer, CommentSerializer
 from .permissions import IsOwnerOrReadOnly
+from rest_framework.generics import UpdateAPIView
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.decorators import action
 
 class PromptViewSet(viewsets.ModelViewSet):
     queryset = Prompt.objects.all()
     serializer_class = PromptSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
     def get_queryset(self):
+        user = self.request.user
+        print("🔍 요청 유저:", user)
         queryset = Prompt.objects.all()
-        if self.request.query_params.get('mine') == 'true' and self.request.user.is_authenticated:
-            queryset = queryset.filter(user=self.request.user)
-        if self.request.query_params.get('liked') == 'true' and self.request.user.is_authenticated:
-            queryset = queryset.filter(likes__user=self.request.user)
-        if self.request.query_params.get('bookmarked') == 'true' and self.request.user.is_authenticated:
-            queryset = queryset.filter(bookmarks__user=self.request.user)
+
+        try:
+            if self.request.query_params.get('mine') == 'true':
+                if user.is_authenticated:
+                    print("📌 mine 필터 활성화")
+                    queryset = queryset.filter(user=user)
+            elif self.request.query_params.get('liked') == 'true':
+                if user.is_authenticated:
+                    print("📌 liked 필터 활성화")
+                    queryset = queryset.filter(prompt_likes__user=user)
+            elif self.request.query_params.get('bookmarked') == 'true':
+                if user.is_authenticated:
+                    print("📌 bookmarked 필터 활성화")
+                    queryset = queryset.filter(bookmarks__user=user)
+        except Exception as e:
+            print("❌ get_queryset 오류 발생:", e)
+
         return queryset
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def mine(self, request):
+        # /api/prompts/mine/ 엔드포인트 추가
+        prompts = Prompt.objects.filter(user=request.user)
+        serializer = self.get_serializer(prompts, many=True)
+        return Response(serializer.data)
+    
 
 class ExecutionViewSet(viewsets.ModelViewSet):
     queryset = Execution.objects.order_by('-executed_at')
@@ -56,9 +84,9 @@ class ToggleLikeView(APIView):
 
         if not created:
             like.delete()
-            return Response({"liked": False, "like_count": prompt.likes.count()})
+            return Response({"is_liked": False, "like_count": prompt.prompt_likes.count()})
         else:
-            return Response({"liked": True, "like_count": prompt.likes.count()})
+            return Response({"is_liked": True, "like_count": prompt.prompt_likes.count()})
 
 
 class ToggleBookmarkView(APIView):
@@ -70,9 +98,9 @@ class ToggleBookmarkView(APIView):
 
         if not created:
             bookmark.delete()
-            return Response({"bookmarked": False, "bookmark_count": prompt.bookmarks.count()})
+            return Response({"is_bookmarked": False, "bookmark_count": prompt.bookmarks.count()})
         else:
-            return Response({"bookmarked": True, "bookmark_count": prompt.bookmarks.count()})
+            return Response({"is_bookmarked": True, "bookmark_count": prompt.bookmarks.count()})
 
 
 # ExecutePromptView 추가
@@ -99,3 +127,27 @@ class ExecutePromptView(APIView):
             "result": result,
             "executed_at": execution.executed_at,
         })
+
+
+class PromptUpdateView(UpdateAPIView):
+    queryset = Prompt.objects.all()
+    serializer_class = PromptSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_update(self, serializer):
+        if self.request.user != serializer.instance.user:
+            raise PermissionDenied("수정 권한이 없습니다.")
+        serializer.save()
+
+
+class PromptListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        mine = request.query_params.get('mine', None)
+        if mine == 'true':
+            prompts = Prompt.objects.filter(user=request.user)  # 현재 사용자만 필터링
+        else:
+            prompts = Prompt.objects.all()
+        serializer = PromptSerializer(prompts, many=True)
+        return Response(serializer.data)

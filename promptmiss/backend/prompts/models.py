@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from rest_framework import serializers
 
 User = get_user_model()
 
@@ -26,8 +27,8 @@ class Execution(models.Model):
 
 
 class Like(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    prompt = models.ForeignKey(Prompt, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_likes')
+    prompt = models.ForeignKey(Prompt, on_delete=models.CASCADE, related_name='prompt_likes')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -57,3 +58,11 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.content[:20]}'
+
+
+class PromptSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Prompt
+        fields = ['id', 'title', 'content', 'tags', 'user', 'created_at']
