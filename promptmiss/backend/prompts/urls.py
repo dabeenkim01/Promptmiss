@@ -16,12 +16,16 @@ Including another URLconf
 """
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import PromptViewSet, ExecutionViewSet
+from .views import PromptViewSet, ExecutionViewSet, ToggleLikeView, ToggleBookmarkView, ExecutePromptView, CommentViewSet
 
 router = DefaultRouter()
 router.register('prompts', PromptViewSet)
 router.register('executions', ExecutionViewSet)
+router.register('comments', CommentViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('prompts/<int:pk>/like/', ToggleLikeView.as_view(), name='toggle-like'),
+    path('prompts/<int:pk>/bookmark/', ToggleBookmarkView.as_view(), name='toggle-bookmark'),
+    path('prompts/<int:pk>/execute/', ExecutePromptView.as_view(), name='execute-prompt'),
 ]
