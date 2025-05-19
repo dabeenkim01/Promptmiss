@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import PromptListView from '../views/PromptListView.vue'
 import PromptCreateView from '../views/PromptCreateView.vue'
 import PromptDetailView from '../views/PromptDetailView.vue'
+import PromptUpdateView from '@/views/PromptUpdateView.vue'
 import LoginView from '../views/LoginView.vue'
 import SignupView from '../views/SignupView.vue'
 
@@ -29,9 +30,9 @@ const router = createRouter({
       component: PromptDetailView,
     },
     {
-      path: '/prompts/:id/edit',
-      name: 'prompt-edit',
-      component: () => import('../views/PromptUpdateView.vue'),
+      path: '/prompts/:id/update',
+      name: 'prompt-update',
+      component: PromptUpdateView,
     },
     {
       path: '/login',

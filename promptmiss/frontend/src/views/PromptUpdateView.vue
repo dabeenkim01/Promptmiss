@@ -24,11 +24,24 @@
           </div>
           <div>
             <label class="block mb-2 text-gray-300">태그</label>
-            <input
-              v-model="form.tags"
-              type="text"
-              class="w-full p-2 rounded bg-zinc-800 text-white border border-gray-600"
-            />
+            <div class="flex flex-wrap gap-2 items-center border border-gray-600 rounded bg-zinc-800 p-2">
+              <span
+                v-for="(tag, index) in tagList"
+                :key="index"
+                class="bg-cyan-700 text-white px-2 py-1 rounded-full text-sm cursor-pointer"
+                @click="removeTag(index)"
+                title="클릭하면 삭제됨"
+              >
+                #{{ tag }}
+              </span>
+              <input
+                v-model="tagInput"
+                @keyup.enter.prevent="addTag"
+                @keyup="handleSeparator"
+                placeholder="공백으로 구분"
+                class="bg-zinc-800 text-white focus:outline-none flex-1"
+              />
+            </div>
           </div>
           <button
             type="submit"
@@ -74,15 +87,36 @@ const loading = ref(true)
 const isOwner = ref(false)
 const currentUserId = Number(localStorage.getItem('userId'))  // ensure it's a number
 
+const tagInput = ref('')
+const tagList = ref([])
+
+const addTag = () => {
+  const trimmed = tagInput.value.trim()
+  if (trimmed && !tagList.value.includes(trimmed)) {
+    tagList.value.push(trimmed)
+    tagInput.value = ''
+  }
+}
+
+const removeTag = (index) => {
+  tagList.value.splice(index, 1)
+}
+
+const handleSeparator = (e) => {
+  if (e.key === ' ' && tagInput.value.trim()) {
+    addTag()
+  }
+}
+
 onMounted(async () => {
   try {
     const { data } = await axios.get(`/api/prompts/${promptId}/`)
     form.title = data.title
     form.content = data.content
-    form.tags = data.tags
-
-    // 작성자 확인 (data.user가 사용자 id인 경우)
-    isOwner.value = Number(currentUserId) === Number(data.user)
+    tagList.value = data.tags
+    
+    // 작성자 확인 (data.user가 객체인 경우 user.id와 비교)
+    isOwner.value = Number(currentUserId) === Number(data.user?.id)
   } catch (error) {
     console.error('프롬프트 불러오기 실패:', error)
   } finally {
@@ -94,7 +128,11 @@ const submitForm = async () => {
   submitting.value = true
   try {
     const token = localStorage.getItem('access')
-    await axios.put(`/api/prompts/${promptId}/`, form, {
+    await axios.put(`/api/prompts/${promptId}/`, {
+      title: form.title,
+      content: form.content,
+      tags: tagList.value,
+    }, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -118,7 +156,7 @@ const deletePrompt = async () => {
   }
 
   try {
-    await axios.delete(`prompts/${route.params.id}/`)
+    await axios.delete(`/api/prompts/${route.params.id}/`)
     router.push('/prompts')
   } catch (error) {
     console.error('삭제 실패:', error)

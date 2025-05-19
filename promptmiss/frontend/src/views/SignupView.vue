@@ -40,20 +40,25 @@ const success = ref(false)
 const router = useRouter()
 
 const signup = async () => {
+  error.value = ''
+  success.value = false
   try {
-    await axios.post('accounts/signup/', {
+    await axios.post('/accounts/signup/', {
       username: username.value,
       password: password.value,
       email: email.value,
     })
     success.value = true
-    error.value = ''
     setTimeout(() => {
       router.push('/login')
     }, 1000)
   } catch (err) {
-    error.value = '회원가입에 실패했습니다.'
-    success.value = false
+    const res = err.response?.data
+    if (res) {
+      error.value = Object.values(res).flat().join(' ')
+    } else {
+      error.value = '회원가입에 실패했습니다.'
+    }
   }
 }
 </script>

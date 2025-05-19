@@ -27,63 +27,72 @@ promptmiss/
 
 ---
 
-## ✅ 현재 완료된 작업 (2025.05.18 기준, 최신 반영 완료)
+## ✅ 현재 완료된 작업 (2025.05.19 기준, 최신 반영 완료)
 
 ### 1. Django 백엔드 초기 세팅
 - 프로젝트명: `config`
-- 앱명: `prompts`
-- `rest_framework`, `prompts` 앱 등록
+- 앱명: `prompts`, `accounts`
+- `rest_framework`, `corsheaders`, `prompts`, `accounts` 등 앱 등록
 - `.gitignore`에 venv, pycache, DS_Store 등 추가
 
 ### 2. 모델 설계
-- Prompt 모델: user(FK), title, content, tags, created_at
+- Prompt 모델: user(FK), title, content, created_at
 - Execution 모델: prompt(FK), user_input, result, executed_at
+- Tag 모델, PromptTag 중간 테이블을 통해 N:M 구현
+- Comment 모델: user(FK), prompt(FK), content, created_at, likes(M:M)
+- 좋아요/북마크용 중간 테이블 (PromptLike, PromptBookmark) 별도 구현
 
 ### 3. API 개발
-- PromptViewSet, ExecutionViewSet 구현 (ModelViewSet)
-- PromptSerializer, ExecutionSerializer 구현
-- 사용자 인증 기반 Prompt 생성 (request.user 자동 연동)
-- 로그인 사용자만 프롬프트 생성 가능 (IsAuthenticated)
-- 전체 Prompt 목록 조회 (비로그인 가능, IsAuthenticatedOrReadOnly)
-- 내 프롬프트만 필터링 조회 (`/api/prompts/?mine=true`)
-- `/api/prompts/`, `/api/executions/`, `/api/accounts/` REST API 엔드포인트 생성
+- PromptSerializer에서 댓글, 실행 이력 포함 응답
+- 사용자 인증 기반 Prompt 생성 (`request.user`)
+- 전체 Prompt 목록 조회 (비로그인 가능, 필터링 지원)
+- 내 프롬프트만 조회 (`/api/prompts/?mine=true`)
+- 좋아요/북마크 기능 (`/api/prompts/<id>/like/`, `/bookmark/`)
+- 댓글 좋아요 기능 (`/comments/<id>/like/`)
+- 실행 API (`/api/prompts/<id>/execute/`) 구현 및 결과 저장
 
-- 좋아요/북마크 기능 구현 (`/api/prompts/<id>/like/`, `/bookmark/`)
-- `?liked=true`, `?bookmarked=true` 파라미터로 필터링 가능
-- PromptSerializer에 like_count, bookmark_count 필드 포함
-- 실행 API (`/api/prompts/<id>/execute/`) 구현 및 실행 결과 저장
-- Execution 모델에 user 필드 추가, 본인 이력만 필터링 조회 가능
-- Prompt 상세 응답에 실행 이력과 댓글 리스트 포함
+### 4. 사용자 인증
+- JWT 기반 인증 구현 (access + refresh 토큰)
+- 로그인/회원가입/내 정보 API 구현
+- 인증 사용자만 Prompt/Comment 생성 및 수정 가능
+- 본인 외 접근 시 `PermissionDenied` 처리
 
-### 4. 테스트
-- Postman에서 회원가입/로그인/프롬프트 생성 테스트 완료
-- JWT 토큰 기반 인증 테스트 완료 (access + refresh)
-- 인증 사용자 기반 프롬프트 생성 및 조회 정상 작동 확인
-
-### 5. 댓글 기능 추가
-- Comment 모델 생성: user, prompt, content, created_at
+### 5. 댓글 기능
 - `/api/comments/`로 CRUD API 구현 (ModelViewSet)
-- Prompt 상세 조회 시 댓글 리스트 포함 (최신순 정렬)
-- 댓글 응답에 작성자 정보 포함
-- 댓글 수정/삭제 시 본인만 가능하도록 커스텀 권한(`IsOwnerOrReadOnly`) 설정
+- Prompt 상세 조회 시 댓글 리스트 포함
+- 댓글 좋아요 수 및 상태 포함 응답
+- 댓글 수정/삭제는 작성자 본인만 가능 (`IsOwnerOrReadOnly`)
 
 ### 6. 프롬프트 수정/삭제 및 권한 처리
-- 프롬프트 수정/삭제 기능 API 구현 (PUT, DELETE)
-- `perform_update`, `perform_destroy`에서 작성자 본인 확인
-- PromptSerializer 사용자 필드 구조 정리 (ID 반환)
-- 사용자 정보 조회 API(`/api/users/me/`) 구현
-- 작성자 외 접근 시 `PermissionDenied` 처리
+- 프롬프트 수정/삭제 API 구현
+- PromptSerializer 사용자 필드 구조 정리 (ID + username 응답)
+- 사용자 정보 API(`/api/users/me/`) 구현
 
 ### 7. 프론트엔드 기능 연동 (Vue)
-- 프롬프트 수정/삭제 페이지 구현 및 API 연동
-- 작성자 본인에게만 수정/삭제 버튼 노출
-- 삭제 시 confirm 처리 및 중복 클릭 방지 로직 추가
+- PromptListView, PromptDetailView, PromptCreateView, PromptUpdateView 등 페이지 구현
 - Tailwind 기반 스타일 통일 (생성/수정/상세)
-- 사용자 정보 localStorage 관리 및 권한 확인 연동
+- 사용자 정보 localStorage 연동 및 권한 확인
+- 댓글 입력, 수정, 삭제 구현
+- prompt 및 comment 작성자 본인만 수정/삭제 가능
+- 실행 결과 출력 + 로딩 처리 구현
+
+### 8. 좋아요 및 북마크 기능 개선
+- PromptSerializer에 is_liked, is_bookmarked 필드 추가
+- 각 프롬프트에 대해 현재 로그인 사용자의 좋아요/북마크 여부를 응답에 포함
+- PromptListView 및 PromptDetailView에서 하드코딩된 좋아요/북마크 컴포넌트 제거
+- 상태 관리는 전적으로 백엔드 응답을 기반으로 렌더링
+- 좋아요/북마크 토글 시 서버 응답을 바탕으로 Vue reactivity 정상 반영되도록 개선
+- 댓글에도 동일한 방식으로 좋아요 상태 렌더링 반영
+
+### 9. 좋아요/북마크 전반 리팩토링
+- LikeButton.vue, BookmarkButton.vue 제거 및 컴포넌트 의존성 축소
+- 좋아요 및 북마크 UI를 모두 서버 응답 기반 렌더링으로 통일
+- `prompt.is_liked`, `prompt.bookmark_count` 등을 기반으로 Vue 템플릿에서 직접 처리
+- 댓글 좋아요 로직도 동일하게 서버 기반 `is_liked`, `like_count` 구조로 리팩토링
+- Vue 반응성 문제 해결: `prompt.value = {...}` 대신 배열 교체 또는 `splice` 구조 적용
+- 전체 좋아요/북마크 기능의 백엔드 일관성 확보 및 프론트 간결화
 
 ---
 
 ## 🧭 다음 작업 예정
-✅ 프론트(Vue)에서 Axios로 API 연동
-✅ JWT 기반 사용자 인증 기능 연동
 - GPT API 호출 연동 (프롬프트 실행 결과 자동 생성)

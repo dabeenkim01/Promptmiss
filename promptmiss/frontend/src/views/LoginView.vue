@@ -35,27 +35,22 @@ const auth = useAuthStore()
 
 const login = async () => {
   try {
-    // 로그인 요청
-    const res = await axios.post('token/', {
+    const res = await axios.post('/accounts/login/', {
       username: username.value,
       password: password.value,
     })
 
-    // 사용자 정보 조회
-    const me = await axios.get('/accounts/me/', {
-      headers: {
-        Authorization: `Bearer ${res.data.access}`,
-      },
+    const access = res.data.access
+    const refresh = res.data.refresh
+    axios.defaults.headers.common.Authorization = `Bearer ${access}`
+
+    const me = await axios.get('/accounts/me/')
+
+    auth.login(access, refresh, {
+      id: me.data.id,
+      username: me.data.username,
     })
 
-    // 로그인 성공 시 토큰 저장 및 사용자 정보 설정
-    auth.login(res.data.access, res.data.refresh, { id: me.data.id })
-
-    // 사용자 정보 저장
-    localStorage.setItem('userId', me.data.id)
-    localStorage.setItem('username', me.data.username)
-
-    // 에러 초기화 및 페이지 이동
     error.value = ''
     router.push('/prompts')
   } catch (err) {

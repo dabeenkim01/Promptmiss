@@ -1,153 +1,141 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
-from rest_framework import status
-from .models import Like, Bookmark
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Prompt, Execution, Comment
-from .serializers import PromptSerializer, ExecutionSerializer, CommentSerializer
-from .permissions import IsOwnerOrReadOnly
-from rest_framework.generics import UpdateAPIView
-from rest_framework.exceptions import PermissionDenied
-from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework import status
+from .models import Prompt, Like, Bookmark, Comment, Tag, PromptTag
+from .serializers import PromptSerializer, CommentSerializer
 
-class PromptViewSet(viewsets.ModelViewSet):
-    queryset = Prompt.objects.all()
-    serializer_class = PromptSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def prompt_list_create(request):
+    if request.method == 'GET':
+        prompts = Prompt.objects.all()
+        tag_name = request.query_params.get('tag')
+        mine = request.query_params.get('mine')
+        liked = request.query_params.get('liked')
+        bookmarked = request.query_params.get('bookmarked')
+        if tag_name:
+            prompts = prompts.filter(prompttag__tag__name=tag_name)
+        if mine == 'true' and request.user.is_authenticated:
+            prompts = prompts.filter(user=request.user)
+        elif liked == 'true' and request.user.is_authenticated:
+            prompts = prompts.filter(prompt_likes__user=request.user)
+        elif bookmarked == 'true' and request.user.is_authenticated:
+            prompts = prompts.filter(bookmarks__user=request.user)
 
-    def get_queryset(self):
-        user = self.request.user
-        print("🔍 요청 유저:", user)
-        queryset = Prompt.objects.all()
-
-        try:
-            if self.request.query_params.get('mine') == 'true':
-                if user.is_authenticated:
-                    print("📌 mine 필터 활성화")
-                    queryset = queryset.filter(user=user)
-            elif self.request.query_params.get('liked') == 'true':
-                if user.is_authenticated:
-                    print("📌 liked 필터 활성화")
-                    queryset = queryset.filter(prompt_likes__user=user)
-            elif self.request.query_params.get('bookmarked') == 'true':
-                if user.is_authenticated:
-                    print("📌 bookmarked 필터 활성화")
-                    queryset = queryset.filter(bookmarks__user=user)
-        except Exception as e:
-            print("❌ get_queryset 오류 발생:", e)
-
-        return queryset
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['request'] = self.request
-        return context
-    
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
-    def mine(self, request):
-        # /api/prompts/mine/ 엔드포인트 추가
-        prompts = Prompt.objects.filter(user=request.user)
-        serializer = self.get_serializer(prompts, many=True)
+        serializer = PromptSerializer(prompts, many=True, context={'request': request})
         return Response(serializer.data)
-    
 
-class ExecutionViewSet(viewsets.ModelViewSet):
-    queryset = Execution.objects.order_by('-executed_at')
-    serializer_class = ExecutionSerializer
-    permission_classes = [IsAuthenticated]
+    elif request.method == 'POST':
+        serializer = PromptSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get_queryset(self):
-        return Execution.objects.filter(user=self.request.user)
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def prompt_detail(request, pk):
+    prompt = get_object_or_404(Prompt, pk=pk)
 
-
-# CommentViewSet 추가
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-
-class ToggleLikeView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, pk):
-        prompt = Prompt.objects.get(pk=pk)
-        like, created = Like.objects.get_or_create(user=request.user, prompt=prompt)
-
-        if not created:
-            like.delete()
-            return Response({"is_liked": False, "like_count": prompt.prompt_likes.count()})
-        else:
-            return Response({"is_liked": True, "like_count": prompt.prompt_likes.count()})
-
-
-class ToggleBookmarkView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, pk):
-        prompt = Prompt.objects.get(pk=pk)
-        bookmark, created = Bookmark.objects.get_or_create(user=request.user, prompt=prompt)
-
-        if not created:
-            bookmark.delete()
-            return Response({"is_bookmarked": False, "bookmark_count": prompt.bookmarks.count()})
-        else:
-            return Response({"is_bookmarked": True, "bookmark_count": prompt.bookmarks.count()})
-
-
-# ExecutePromptView 추가
-class ExecutePromptView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, pk):
-        prompt = get_object_or_404(Prompt, pk=pk)
-        user_input = request.data.get('user_input')
-
-        # GPT 호출 더미 응답
-        result = f"[GPT 응답 예시] Prompt: {prompt.content}, Input: {user_input}"
-
-        execution = Execution.objects.create(
-            prompt=prompt,
-            user=request.user,
-            user_input=user_input,
-            result=result,
-        )
-
-        return Response({
-            "prompt_id": prompt.id,
-            "user_input": user_input,
-            "result": result,
-            "executed_at": execution.executed_at,
-        })
-
-
-class PromptUpdateView(UpdateAPIView):
-    queryset = Prompt.objects.all()
-    serializer_class = PromptSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_update(self, serializer):
-        if self.request.user != serializer.instance.user:
-            raise PermissionDenied("수정 권한이 없습니다.")
-        serializer.save()
-
-
-class PromptListView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        mine = request.query_params.get('mine', None)
-        if mine == 'true':
-            prompts = Prompt.objects.filter(user=request.user)  # 현재 사용자만 필터링
-        else:
-            prompts = Prompt.objects.all()
-        serializer = PromptSerializer(prompts, many=True)
+    if request.method == 'GET':
+        serializer = PromptSerializer(prompt, context={'request': request})
         return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        if request.user != prompt.user:
+            return Response({'detail': '수정 권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
+        serializer = PromptSerializer(prompt, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        if request.user != prompt.user:
+            return Response({'detail': '삭제 권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
+        prompt.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_like(request, pk):
+    prompt = get_object_or_404(Prompt, pk=pk)
+    like, created = Like.objects.get_or_create(user=request.user, prompt=prompt)
+    if not created:
+        like.delete()
+        return Response({'is_liked': False, 'like_count': prompt.prompt_likes.count()})
+    return Response({'is_liked': True, 'like_count': prompt.prompt_likes.count()})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_bookmark(request, pk):
+    prompt = get_object_or_404(Prompt, pk=pk)
+    bookmark, created = Bookmark.objects.get_or_create(user=request.user, prompt=prompt)
+    if not created:
+        bookmark.delete()
+        return Response({'is_bookmarked': False, 'bookmark_count': prompt.bookmarks.count()})
+    return Response({'is_bookmarked': True, 'bookmark_count': prompt.bookmarks.count()})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def execute_prompt(request, pk):
+    prompt = get_object_or_404(Prompt, pk=pk)
+    user_input = request.data.get('user_input')
+
+    result = f"[GPT 응답 예시] Prompt: {prompt.content}, Input: {user_input}"
+
+    execution = prompt.execution_set.create(
+        user=request.user,
+        user_input=user_input,
+        result=result,
+    )
+
+    return Response({
+        "prompt_id": prompt.id,
+        "user_input": user_input,
+        "result": result,
+        "executed_at": execution.executed_at,
+    })
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def comment_list_create(request, prompt_id):
+    prompt = get_object_or_404(Prompt, id=prompt_id)
+
+    if request.method == 'GET':
+        comments = prompt.comments.all()
+        serializer = CommentSerializer(comments, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user, prompt=prompt)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def comment_delete(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if comment.user != request.user:
+        return Response({'detail': '삭제 권한이 없습니다.'}, status=403)
+    comment.delete()
+    return Response(status=204)
+
+# Toggle like on a comment
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_comment_like(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    user = request.user
+    if user in comment.likes.all():
+        comment.likes.remove(user)
+    else:
+        comment.likes.add(user)
+    return Response({
+        'likes': comment.likes.count(),
+        'is_liked': comment.likes.filter(id=user.id).exists()
+    })

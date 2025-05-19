@@ -1,31 +1,13 @@
-"""
-URL configuration for config project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import PromptViewSet, ExecutionViewSet, ToggleLikeView, ToggleBookmarkView, ExecutePromptView, CommentViewSet
-
-router = DefaultRouter()
-router.register('prompts', PromptViewSet)
-router.register('executions', ExecutionViewSet)
-router.register('comments', CommentViewSet)
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('prompts/<int:pk>/like/', ToggleLikeView.as_view(), name='toggle-like'),
-    path('prompts/<int:pk>/bookmark/', ToggleBookmarkView.as_view(), name='toggle-bookmark'),
-    path('prompts/<int:pk>/execute/', ExecutePromptView.as_view(), name='execute-prompt'),
+    path('prompts/', views.prompt_list_create, name='prompt-list-create'),
+    path('prompts/<int:pk>/', views.prompt_detail, name='prompt-detail'),
+    path('prompts/<int:pk>/like/', views.toggle_like, name='toggle-like'),
+    path('prompts/<int:pk>/bookmark/', views.toggle_bookmark, name='toggle-bookmark'),
+    path('prompts/<int:pk>/execute/', views.execute_prompt, name='execute-prompt'),
+    path('prompts/<int:prompt_id>/comments/', views.comment_list_create, name='comment-list-create'),
+    path('comments/<int:comment_id>/delete/', views.comment_delete, name='comment-delete'),
+    path('comments/<int:comment_id>/like/', views.toggle_comment_like, name='comment-like'),
 ]

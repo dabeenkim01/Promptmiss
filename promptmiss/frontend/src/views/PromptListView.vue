@@ -15,15 +15,22 @@
         <button :class="{ active: filterType === 'bookmarked' }" @click="setFilter('bookmarked')">북마크한</button>
       </div>
 
-      <ul v-if="prompts.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div v-if="isLoading" class="text-gray-400">불러오는 중...</div>
+
+      <ul v-else-if="prompts.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <li v-for="prompt in prompts" :key="prompt.id" class="bg-zinc-800 text-white p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all h-52 flex flex-col justify-between">
           <RouterLink :to="`/prompts/${prompt.id}`" class="block">
             <h3 class="text-lg font-bold text-teal-400 mb-1">{{ prompt.title }}</h3>
+            <p class="text-xs text-gray-400">작성자: {{ prompt.user.username }}</p>
             <p class="text-sm text-gray-300 line-clamp-3">{{ prompt.content }}</p>
           </RouterLink>
           <div class="flex justify-end items-center gap-3 text-sm text-gray-400 mt-3">
-            <LikeButton :prompt="prompt" @toggled="onToggle(prompt.id, 'like')" />
-            <BookmarkButton :prompt="prompt" @toggled="onToggle(prompt.id, 'bookmark')" />
+            <span @click="toggleLike(prompt)" class="cursor-pointer">
+              {{ prompt.is_liked ? '❤️' : '🤍' }} {{ prompt.like_count }}
+            </span>
+            <span @click="toggleBookmark(prompt)" class="cursor-pointer">
+              {{ prompt.is_bookmarked ? '📌' : '📎' }} {{ prompt.bookmark_count }}
+            </span>
           </div>
         </li>
       </ul>
@@ -37,18 +44,18 @@
 </template>
 
 <script setup>
-import LikeButton from '@/components/LikeButton.vue'
-import BookmarkButton from '@/components/BookmarkButton.vue'
 import { ref, onMounted } from 'vue'
 import axios from '@/api/axios'
 import { useRoute, useRouter } from 'vue-router'
 
 const prompts = ref([])
 const filterType = ref('all')
+const isLoading = ref(false)
 const route = useRoute()
 const router = useRouter()
 
 const fetchPrompts = async () => {
+  isLoading.value = true
   let endpoint = 'prompts/'
 
   if (filterType.value === 'mine') {
@@ -64,6 +71,8 @@ const fetchPrompts = async () => {
     prompts.value = response.data
   } catch (error) {
     console.error('프롬프트 불러오기 실패:', error)
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -82,22 +91,30 @@ onMounted(() => {
   filterType.value = initial
   fetchPrompts()
 })
-const onToggle = (id, type) => {
-  const prompt = prompts.value.find(p => p.id === id)
-  if (!prompt) return
 
-  // 눌린 버튼의 상태만 토글
-  if (type === 'like') {
-    prompt.is_liked = !prompt.is_liked
-  } else if (type === 'bookmark') {
-    prompt.is_bookmarked = !prompt.is_bookmarked
+const toggleLike = async (prompt) => {
+  try {
+    const res = await axios.post(`/prompts/${prompt.id}/like/`)
+    prompt.is_liked = res.data.is_liked
+    prompt.like_count = res.data.like_count
+    if (filterType.value === 'liked' && !prompt.is_liked) {
+      prompts.value = prompts.value.filter(p => p.id !== prompt.id)
+    }
+  } catch (err) {
+    console.error('프롬프트 좋아요 실패:', err)
   }
+}
 
-  // 필터 조건 만족하지 않으면 제거
-  if (filterType.value === 'liked' && !prompt.is_liked) {
-    prompts.value = prompts.value.filter(p => p.id !== id)
-  } else if (filterType.value === 'bookmarked' && !prompt.is_bookmarked) {
-    prompts.value = prompts.value.filter(p => p.id !== id)
+const toggleBookmark = async (prompt) => {
+  try {
+    const res = await axios.post(`/prompts/${prompt.id}/bookmark/`)
+    prompt.is_bookmarked = res.data.is_bookmarked
+    prompt.bookmark_count = res.data.bookmark_count
+    if (filterType.value === 'bookmarked' && !prompt.is_bookmarked) {
+      prompts.value = prompts.value.filter(p => p.id !== prompt.id)
+    }
+  } catch (err) {
+    console.error('프롬프트 북마크 실패:', err)
   }
 }
 </script>
