@@ -8,7 +8,7 @@
     </div>
 
     <div class="w-full">
-      <div class="min-h-[3.5rem] flex items-center gap-2 mb-4">
+      <div class="min-h-[3.5rem] flex items-center gap-4 mb-4">
         <button :class="{ active: filterType === 'all' }" @click="setFilter('all')">전체</button>
         <button :class="{ active: filterType === 'mine' }" @click="setFilter('mine')">내 프롬프트</button>
         <button :class="{ active: filterType === 'liked' }" @click="setFilter('liked')">좋아요한</button>
@@ -25,10 +25,10 @@
             <p class="text-sm text-gray-300 line-clamp-3">{{ prompt.content }}</p>
           </RouterLink>
           <div class="flex justify-end items-center gap-3 text-sm text-gray-400 mt-3">
-            <span @click="toggleLike(prompt)" class="cursor-pointer">
+            <span @click="promptStore.handleLike(prompt)" class="cursor-pointer">
               {{ prompt.is_liked ? '❤️' : '🤍' }} {{ prompt.like_count }}
             </span>
-            <span @click="toggleBookmark(prompt)" class="cursor-pointer">
+            <span @click="promptStore.handleBookmark(prompt)" class="cursor-pointer">
               {{ prompt.is_bookmarked ? '📌' : '📎' }} {{ prompt.bookmark_count }}
             </span>
           </div>
@@ -44,36 +44,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from '@/api/axios'
+import { ref, onMounted, computed } from 'vue'
+import { usePromptStore } from '@/stores/prompt'
 import { useRoute, useRouter } from 'vue-router'
 
-const prompts = ref([])
 const filterType = ref('all')
+const promptStore = usePromptStore()
+const prompts = computed(() => promptStore.prompts)
 const isLoading = ref(false)
 const route = useRoute()
 const router = useRouter()
 
-const fetchPrompts = async () => {
-  isLoading.value = true
-  let endpoint = 'prompts/'
-
-  if (filterType.value === 'mine') {
-    endpoint += '?mine=true'
-  } else if (filterType.value === 'liked') {
-    endpoint += '?liked=true'
-  } else if (filterType.value === 'bookmarked') {
-    endpoint += '?bookmarked=true'
-  }
-
-  try {
-    const response = await axios.get(endpoint)
-    prompts.value = response.data
-  } catch (error) {
-    console.error('프롬프트 불러오기 실패:', error)
-  } finally {
-    isLoading.value = false
-  }
+const fetchPrompts = () => {
+  promptStore.fetchPrompts(filterType.value)
 }
 
 const setFilter = (type) => {
@@ -91,32 +74,6 @@ onMounted(() => {
   filterType.value = initial
   fetchPrompts()
 })
-
-const toggleLike = async (prompt) => {
-  try {
-    const res = await axios.post(`/prompts/${prompt.id}/like/`)
-    prompt.is_liked = res.data.is_liked
-    prompt.like_count = res.data.like_count
-    if (filterType.value === 'liked' && !prompt.is_liked) {
-      prompts.value = prompts.value.filter(p => p.id !== prompt.id)
-    }
-  } catch (err) {
-    console.error('프롬프트 좋아요 실패:', err)
-  }
-}
-
-const toggleBookmark = async (prompt) => {
-  try {
-    const res = await axios.post(`/prompts/${prompt.id}/bookmark/`)
-    prompt.is_bookmarked = res.data.is_bookmarked
-    prompt.bookmark_count = res.data.bookmark_count
-    if (filterType.value === 'bookmarked' && !prompt.is_bookmarked) {
-      prompts.value = prompts.value.filter(p => p.id !== prompt.id)
-    }
-  } catch (err) {
-    console.error('프롬프트 북마크 실패:', err)
-  }
-}
 </script>
 
 <style scoped>

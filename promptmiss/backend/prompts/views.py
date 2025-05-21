@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from datetime import timedelta
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -105,14 +107,16 @@ def comment_list_create(request, prompt_id):
     prompt = get_object_or_404(Prompt, id=prompt_id)
 
     if request.method == 'GET':
-        comments = prompt.comments.all()
+        comments = prompt.comments.filter(parent=None).order_by('created_at')
         serializer = CommentSerializer(comments, many=True, context={'request': request})
         return Response(serializer.data)
 
     elif request.method == 'POST':
+        parent_id = request.data.get('parent')
+        parent = Comment.objects.get(id=parent_id) if parent_id else None
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user, prompt=prompt)
+            serializer.save(user=request.user, prompt=prompt, parent=parent)
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
@@ -136,6 +140,28 @@ def toggle_comment_like(request, comment_id):
     else:
         comment.likes.add(user)
     return Response({
-        'likes': comment.likes.count(),
+        'like_count': comment.likes.count(),
         'is_liked': comment.likes.filter(id=user.id).exists()
     })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def reply_create(request, comment_id):
+    parent_comment = get_object_or_404(Comment, pk=comment_id)
+    content = request.data.get('content', '').strip()
+
+    # Prevent duplicate reply creation within 10 seconds
+    recent_duplicates = Comment.objects.filter(
+        user=request.user,
+        parent=parent_comment,
+        content=content,
+        created_at__gte=timezone.now() - timedelta(seconds=10)
+    )
+    if recent_duplicates.exists():
+        return Response({'detail': '중복된 대댓글입니다.'}, status=400)
+
+    serializer = CommentSerializer(data=request.data, context={'request': request})
+    if serializer.is_valid():
+        serializer.save(user=request.user, prompt=parent_comment.prompt, parent=parent_comment)
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)

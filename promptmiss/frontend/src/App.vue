@@ -1,9 +1,7 @@
 <template>
-  <div class="min-h-screen bg-zinc-900 text-white">
-    <Navbar />
-    <main class="max-w-6xl w-full mx-auto pt-20 px-4">
-      <RouterView />
-    </main>
+  <Navbar />
+  <div class="min-h-screen pt-[62px] bg-zinc-900 text-white">
+    <RouterView />
   </div>
 </template>
 

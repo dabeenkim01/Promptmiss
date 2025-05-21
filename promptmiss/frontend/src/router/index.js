@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
 import PromptListView from '../views/PromptListView.vue'
 import PromptCreateView from '../views/PromptCreateView.vue'
 import PromptDetailView from '../views/PromptDetailView.vue'
 import PromptUpdateView from '@/views/PromptUpdateView.vue'
 import LoginView from '../views/LoginView.vue'
 import SignupView from '../views/SignupView.vue'
+import MypageView from '../views/MypageView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,7 +14,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'Home',
-      component: PromptListView,
+      component: HomeView,
     },
     {
       path: '/prompts',
@@ -43,6 +45,11 @@ const router = createRouter({
       path: '/signup',
       name: 'signup',
       component: SignupView,
+    },
+    {
+      path: '/mypage',
+      name: 'mypage',
+      component: MypageView,
     },
   ],
 })

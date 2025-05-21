@@ -1,0 +1,398 @@
+[
+  {
+    "model": "prompts.prompt",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "title": "프롬프트 제목 1",
+      "content": "이건 1번째 프롬프트입니다.",
+      "created_at": "2025-05-21T12:11:00Z"
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "prompt": 1,
+      "content": "이건 1번째 댓글입니다.",
+      "created_at": "2025-05-21T13:11:00Z",
+      "parent": null
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 11,
+    "fields": {
+      "user": 1,
+      "prompt": 1,
+      "content": "이건 1번째 댓글에 대한 대댓글입니다.",
+      "created_at": "2025-05-21T13:12:00Z",
+      "parent": 1
+    }
+  },
+  {
+    "model": "prompts.prompt",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "title": "프롬프트 제목 2",
+      "content": "이건 2번째 프롬프트입니다.",
+      "created_at": "2025-05-21T12:12:00Z"
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "prompt": 2,
+      "content": "이건 2번째 댓글입니다.",
+      "created_at": "2025-05-21T13:12:00Z",
+      "parent": null
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 12,
+    "fields": {
+      "user": 1,
+      "prompt": 2,
+      "content": "이건 2번째 댓글에 대한 대댓글입니다.",
+      "created_at": "2025-05-21T13:13:00Z",
+      "parent": 2
+    }
+  },
+  {
+    "model": "prompts.prompt",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "title": "프롬프트 제목 3",
+      "content": "이건 3번째 프롬프트입니다.",
+      "created_at": "2025-05-21T12:13:00Z"
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "prompt": 3,
+      "content": "이건 3번째 댓글입니다.",
+      "created_at": "2025-05-21T13:13:00Z",
+      "parent": null
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 13,
+    "fields": {
+      "user": 1,
+      "prompt": 3,
+      "content": "이건 3번째 댓글에 대한 대댓글입니다.",
+      "created_at": "2025-05-21T13:14:00Z",
+      "parent": 3
+    }
+  },
+  {
+    "model": "prompts.prompt",
+    "pk": 4,
+    "fields": {
+      "user": 1,
+      "title": "프롬프트 제목 4",
+      "content": "이건 4번째 프롬프트입니다.",
+      "created_at": "2025-05-21T12:14:00Z"
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 4,
+    "fields": {
+      "user": 1,
+      "prompt": 4,
+      "content": "이건 4번째 댓글입니다.",
+      "created_at": "2025-05-21T13:14:00Z",
+      "parent": null
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 14,
+    "fields": {
+      "user": 1,
+      "prompt": 4,
+      "content": "이건 4번째 댓글에 대한 대댓글입니다.",
+      "created_at": "2025-05-21T13:15:00Z",
+      "parent": 4
+    }
+  },
+  {
+    "model": "prompts.prompt",
+    "pk": 5,
+    "fields": {
+      "user": 1,
+      "title": "프롬프트 제목 5",
+      "content": "이건 5번째 프롬프트입니다.",
+      "created_at": "2025-05-21T12:15:00Z"
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 5,
+    "fields": {
+      "user": 1,
+      "prompt": 5,
+      "content": "이건 5번째 댓글입니다.",
+      "created_at": "2025-05-21T13:15:00Z",
+      "parent": null
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 15,
+    "fields": {
+      "user": 1,
+      "prompt": 5,
+      "content": "이건 5번째 댓글에 대한 대댓글입니다.",
+      "created_at": "2025-05-21T13:16:00Z",
+      "parent": 5
+    }
+  },
+  {
+    "model": "prompts.prompt",
+    "pk": 6,
+    "fields": {
+      "user": 1,
+      "title": "프롬프트 제목 6",
+      "content": "이건 6번째 프롬프트입니다.",
+      "created_at": "2025-05-21T12:16:00Z"
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 6,
+    "fields": {
+      "user": 1,
+      "prompt": 6,
+      "content": "이건 6번째 댓글입니다.",
+      "created_at": "2025-05-21T13:16:00Z",
+      "parent": null
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 16,
+    "fields": {
+      "user": 1,
+      "prompt": 6,
+      "content": "이건 6번째 댓글에 대한 대댓글입니다.",
+      "created_at": "2025-05-21T13:17:00Z",
+      "parent": 6
+    }
+  },
+  {
+    "model": "prompts.prompt",
+    "pk": 7,
+    "fields": {
+      "user": 1,
+      "title": "프롬프트 제목 7",
+      "content": "이건 7번째 프롬프트입니다.",
+      "created_at": "2025-05-21T12:17:00Z"
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 7,
+    "fields": {
+      "user": 1,
+      "prompt": 7,
+      "content": "이건 7번째 댓글입니다.",
+      "created_at": "2025-05-21T13:17:00Z",
+      "parent": null
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 17,
+    "fields": {
+      "user": 1,
+      "prompt": 7,
+      "content": "이건 7번째 댓글에 대한 대댓글입니다.",
+      "created_at": "2025-05-21T13:18:00Z",
+      "parent": 7
+    }
+  },
+  {
+    "model": "prompts.prompt",
+    "pk": 8,
+    "fields": {
+      "user": 1,
+      "title": "프롬프트 제목 8",
+      "content": "이건 8번째 프롬프트입니다.",
+      "created_at": "2025-05-21T12:18:00Z"
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 8,
+    "fields": {
+      "user": 1,
+      "prompt": 8,
+      "content": "이건 8번째 댓글입니다.",
+      "created_at": "2025-05-21T13:18:00Z",
+      "parent": null
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 18,
+    "fields": {
+      "user": 1,
+      "prompt": 8,
+      "content": "이건 8번째 댓글에 대한 대댓글입니다.",
+      "created_at": "2025-05-21T13:19:00Z",
+      "parent": 8
+    }
+  },
+  {
+    "model": "prompts.prompt",
+    "pk": 9,
+    "fields": {
+      "user": 1,
+      "title": "프롬프트 제목 9",
+      "content": "이건 9번째 프롬프트입니다.",
+      "created_at": "2025-05-21T12:19:00Z"
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 9,
+    "fields": {
+      "user": 1,
+      "prompt": 9,
+      "content": "이건 9번째 댓글입니다.",
+      "created_at": "2025-05-21T13:19:00Z",
+      "parent": null
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 19,
+    "fields": {
+      "user": 1,
+      "prompt": 9,
+      "content": "이건 9번째 댓글에 대한 대댓글입니다.",
+      "created_at": "2025-05-21T13:20:00Z",
+      "parent": 9
+    }
+  },
+  {
+    "model": "prompts.prompt",
+    "pk": 10,
+    "fields": {
+      "user": 1,
+      "title": "프롬프트 제목 10",
+      "content": "이건 10번째 프롬프트입니다.",
+      "created_at": "2025-05-21T12:20:00Z"
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 10,
+    "fields": {
+      "user": 1,
+      "prompt": 10,
+      "content": "이건 10번째 댓글입니다.",
+      "created_at": "2025-05-21T13:20:00Z",
+      "parent": null
+    }
+  },
+  {
+    "model": "prompts.comment",
+    "pk": 20,
+    "fields": {
+      "user": 1,
+      "prompt": 10,
+      "content": "이건 10번째 댓글에 대한 대댓글입니다.",
+      "created_at": "2025-05-21T13:21:00Z",
+      "parent": 10
+    }
+  }
+  ,
+  {
+    "model": "prompts.tag",
+    "pk": 1,
+    "fields": { "name": "AI" }
+  },
+  {
+    "model": "prompts.tag",
+    "pk": 2,
+    "fields": { "name": "Python" }
+  },
+  {
+    "model": "prompts.tag",
+    "pk": 3,
+    "fields": { "name": "유머" }
+  },
+  {
+    "model": "prompts.tag",
+    "pk": 4,
+    "fields": { "name": "일상" }
+  },
+  {
+    "model": "prompts.tag",
+    "pk": 5,
+    "fields": { "name": "뉴스" }
+  },
+  {
+    "model": "prompts.prompttag",
+    "pk": 1,
+    "fields": { "prompt": 1, "tag": 1 }
+  },
+  {
+    "model": "prompts.prompttag",
+    "pk": 2,
+    "fields": { "prompt": 2, "tag": 2 }
+  },
+  {
+    "model": "prompts.prompttag",
+    "pk": 3,
+    "fields": { "prompt": 3, "tag": 3 }
+  },
+  {
+    "model": "prompts.prompttag",
+    "pk": 4,
+    "fields": { "prompt": 4, "tag": 1 }
+  },
+  {
+    "model": "prompts.prompttag",
+    "pk": 5,
+    "fields": { "prompt": 5, "tag": 2 }
+  },
+  {
+    "model": "prompts.prompttag",
+    "pk": 6,
+    "fields": { "prompt": 6, "tag": 4 }
+  },
+  {
+    "model": "prompts.prompttag",
+    "pk": 7,
+    "fields": { "prompt": 7, "tag": 5 }
+  },
+  {
+    "model": "prompts.prompttag",
+    "pk": 8,
+    "fields": { "prompt": 8, "tag": 1 }
+  },
+  {
+    "model": "prompts.prompttag",
+    "pk": 9,
+    "fields": { "prompt": 9, "tag": 3 }
+  },
+  {
+    "model": "prompts.prompttag",
+    "pk": 10,
+    "fields": { "prompt": 10, "tag": 2 }
+  }
+]

@@ -52,49 +52,18 @@
           </button>
         </div>
       </div>
-
-      <!-- Comments -->
-      <div class="mt-12 pt-6 border-t border-zinc-700">
-        <h2 class="text-2xl text-white font-bold mb-4">💬 댓글</h2>
-
-        <!-- New comment form -->
-        <div v-if="auth.isLoggedIn" class="mb-6">
-          <textarea v-model="commentContent" class="w-full p-4 rounded bg-zinc-800 text-white" rows="3" placeholder="댓글을 입력하세요"></textarea>
-          <button @click="submitComment" class="mt-2 bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded">댓글 작성</button>
-        </div>
-        <div v-else class="text-gray-400 text-sm">댓글을 작성하려면 로그인하세요.</div>
-
-        <!-- Comments list -->
-        <ul class="space-y-4">
-          <li v-for="comment in comments" :key="comment.id" class="p-4 bg-zinc-800 rounded text-white">
-            <div class="flex justify-between items-start">
-              <p class="text-sm text-gray-400">작성자: {{ comment.user.username }}</p>
-              <button
-                v-if="auth.user?.id === comment.user.id"
-                @click="deleteComment(comment.id)"
-                class="text-sm text-red-400 hover:underline"
-              >
-                🗑️ 삭제
-              </button>
-            </div>
-            <p>{{ comment.content }}</p>
-            <div class="mt-2 flex items-center gap-4 text-sm text-gray-300">
-              <span
-                class="cursor-pointer"
-                @click="toggleLike(comment)"
-                :class="{ 'text-red-500': comment.is_liked, 'text-white': !comment.is_liked }"
-              >
-                {{ comment.is_liked ? '❤️' : '🤍' }} {{ comment.like_count ?? 0 }}
-              </span>
-            </div>
-          </li>
-        </ul>
-      </div>
+      <CommentSection
+        :prompt-id="prompt.id"
+        :comments="prompt.comments"
+        @refresh="fetchPromptDetail"
+        v-if="prompt"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
+import CommentSection from '@/components/CommentSection.vue'
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import axios from '@/api/axios'
@@ -105,67 +74,8 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
-// Comments state
-const comments = ref([])
-const commentContent = ref('')
-
 // Deleting state
 const isDeleting = ref(false)
-
-// Fetch comments
-const fetchComments = async () => {
-  try {
-    const res = await axios.get(`prompts/${route.params.id}/comments/`)
-    comments.value = res.data
-  } catch (err) {
-    console.error('댓글 불러오기 실패:', err)
-  }
-}
-
-// Submit new comment
-const submitComment = async () => {
-  if (!commentContent.value.trim()) return
-  try {
-    const res = await axios.post(`prompts/${route.params.id}/comments/`, {
-      content: commentContent.value,
-    })
-    comments.value.push(res.data)
-    commentContent.value = ''
-  } catch (err) {
-    console.error('댓글 작성 실패:', err)
-  }
-}
-
-// Delete comment
-const deleteComment = async (commentId) => {
-  if (!confirm('댓글을 삭제하시겠습니까?')) return
-  try {
-    await axios.delete(`/comments/${commentId}/delete/`)
-    comments.value = comments.value.filter(c => c.id !== commentId)
-  } catch (err) {
-    console.error('댓글 삭제 실패:', err)
-  }
-}
-
-// Toggle like on comment
-const toggleLike = async (comment) => {
-  try {
-    const res = await axios.post(`/comments/${comment.id}/like/`)
-    const updated = {
-      ...comment,
-      like_count: res.data.likes,
-      is_liked: res.data.is_liked
-    }
-    const idx = comments.value.findIndex(c => c.id === comment.id)
-    console.log(updated)
-    if (idx !== -1) {
-      comments.value[idx] = updated
-      comments.value = [...comments.value]  // force Vue to detect reactivity
-    }
-  } catch (err) {
-    console.error('댓글 좋아요 실패:', err)
-  }
-}
 
 // Check if the logged-in user is the owner of the prompt
 const isOwner = computed(() => {
@@ -196,15 +106,16 @@ const togglePromptBookmark = async () => {
   }
 }
 
-onMounted(async () => {
+const fetchPromptDetail = async () => {
   try {
     const res = await axios.get(`prompts/${route.params.id}/`)
     prompt.value = res.data
   } catch (err) {
     console.error('프롬프트 상세 조회 실패:', err)
   }
-  await fetchComments()
-})
+}
+
+onMounted(fetchPromptDetail)
 
 const deletePrompt = async () => {
   if (!confirm('정말 삭제하시겠습니까?')) return

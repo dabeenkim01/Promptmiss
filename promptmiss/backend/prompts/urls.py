@@ -10,4 +10,5 @@ urlpatterns = [
     path('prompts/<int:prompt_id>/comments/', views.comment_list_create, name='comment-list-create'),
     path('comments/<int:comment_id>/delete/', views.comment_delete, name='comment-delete'),
     path('comments/<int:comment_id>/like/', views.toggle_comment_like, name='comment-like'),
+    path('comments/<int:comment_id>/replies/', views.reply_create, name='reply-create'),
 ]

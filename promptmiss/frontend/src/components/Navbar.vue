@@ -1,27 +1,31 @@
 <template>
   <nav class="navbar">
-        <RouterLink to="/" class="brand">PROMPTMISS</RouterLink>
-        <div class="nav-right">
-          <RouterLink to="/prompts" class="nav-link">📚 프롬프트</RouterLink>
-          <template v-if="!auth.isLoggedIn">
-            <span class="separator"> | </span>
-            <RouterLink to="/login" class="nav-link">🔐 로그인</RouterLink>
-            <span class="separator"> | </span>
-            <RouterLink to="/signup" class="nav-link">📝 회원가입</RouterLink>
-          </template>
-          <template v-else>
-            <span class="separator"> | </span>
-            <LogoutButton />
-          </template>
-        </div>
-      </nav>
+    <RouterLink to="/" class="brand">PROMPTMISS</RouterLink>
+    <div class="nav-right">
+      <RouterLink to="/prompts" class="nav-link">📚 프롬프트</RouterLink>
+      <template v-if="!auth.isLoggedIn">
+        <span class="separator"> | </span>
+        <RouterLink to="/signup" class="nav-link">📝 회원가입</RouterLink>
+        <span class="separator"> | </span>
+        <RouterLink to="/login" class="nav-link">🔐 로그인</RouterLink>
+      </template>
+      <template v-else>
+        <span class="separator"> | </span>
+        <RouterLink to="/mypage" class="nav-link">👤 마이페이지</RouterLink>
+        <span class="separator"> | </span>
+        <span @click="logout" class="nav-link cursor-pointer">🚪 로그아웃</span>
+      </template>
+    </div>
+  </nav>
 </template>
 
 <script setup>
 import { useAuthStore } from '@/stores/auth'
-import LogoutButton from './LogoutButton.vue'
 
 const auth = useAuthStore()
+const logout = () => {
+  auth.logout()
+}
 </script>
 
 <style scoped>

@@ -12,4 +12,4 @@ dist/
 
 # VSCode
 .vscode/
-.env.DS_Store
+.env

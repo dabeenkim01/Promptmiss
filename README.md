@@ -27,7 +27,7 @@ promptmiss/
 
 ---
 
-## ✅ 현재 완료된 작업 (2025.05.19 기준, 최신 반영 완료)
+## ✅ 현재 완료된 작업 (2025.05.21 기준, 최신 반영 완료)
 
 ### 1. Django 백엔드 초기 세팅
 - 프로젝트명: `config`
@@ -61,7 +61,10 @@ promptmiss/
 - `/api/comments/`로 CRUD API 구현 (ModelViewSet)
 - Prompt 상세 조회 시 댓글 리스트 포함
 - 댓글 좋아요 수 및 상태 포함 응답
-- 댓글 수정/삭제는 작성자 본인만 가능 (`IsOwnerOrReadOnly`)
+- 댓글 수정/삭제는 작성자 본인만 가능 (Vue에서 로그인 사용자 ID 비교로 제어)
+- 대댓글 기능 구현 (parent 필드를 활용한 계층 구조)
+- 대댓글은 하나의 댓글 아래로만 단일 깊이로 렌더링
+- 대댓글 상태는 `replies` 배열로 응답되며, 작성, 좋아요, 삭제까지 모두 지원
 
 ### 6. 프롬프트 수정/삭제 및 권한 처리
 - 프롬프트 수정/삭제 API 구현
@@ -91,6 +94,13 @@ promptmiss/
 - 댓글 좋아요 로직도 동일하게 서버 기반 `is_liked`, `like_count` 구조로 리팩토링
 - Vue 반응성 문제 해결: `prompt.value = {...}` 대신 배열 교체 또는 `splice` 구조 적용
 - 전체 좋아요/북마크 기능의 백엔드 일관성 확보 및 프론트 간결화
+
+### 10. 프론트엔드 로직 개선 및 상태 관리 일원화
+- PromptListView.vue에서 axios 직접 호출 제거, 상태 관리를 전적으로 Pinia store로 통합
+- prompt store에 `toggleLike`, `toggleBookmark`, `handleLike`, `handleBookmark` 추가
+- 좋아요/북마크 토글 시 실시간 UI 반영 (카운트 업데이트 및 목록에서 조건 제거)
+- HomeView.vue도 store 기반으로 실시간 인기 프롬프트 렌더링 및 상호작용 구현
+- 각 뷰에서 중복 로직 제거 및 UI 단순화
 
 ---
 

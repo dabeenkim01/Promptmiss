@@ -9,6 +9,9 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
+import Toastify from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
+
 axios.defaults.baseURL = 'http://localhost:8000'
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem('access')
@@ -24,5 +27,10 @@ const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 app.use(router)
+
+app.use(Toastify, {
+  autoClose: 3000,
+  position: 'top-right',
+})
 
 app.mount('#app')
