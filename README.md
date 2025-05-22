@@ -27,7 +27,7 @@ promptmiss/
 
 ---
 
-## ✅ 현재 완료된 작업 (2025.05.21 기준, 최신 반영 완료)
+## ✅ 현재 완료된 작업 (2025.05.22 기준, 최신 반영 완료)
 
 ### 1. Django 백엔드 초기 세팅
 - 프로젝트명: `config`
@@ -101,6 +101,19 @@ promptmiss/
 - 좋아요/북마크 토글 시 실시간 UI 반영 (카운트 업데이트 및 목록에서 조건 제거)
 - HomeView.vue도 store 기반으로 실시간 인기 프롬프트 렌더링 및 상호작용 구현
 - 각 뷰에서 중복 로직 제거 및 UI 단순화
+
+### 11. 프론트엔드 전역 스타일 시스템 도입 및 UI 리팩토링
+- 전역 스타일 클래스 구조(`main.css`) 도입
+  - `--bg-main`, `--text-sub` 등 CSS 변수 기반 다크 테마 색상 시스템 정의
+  - Tailwind `@apply`를 활용한 전역 클래스 생성  
+    - `.form-container`, `.input-field`, `.btn-primary`, `.prompt-card`, `.page-center` 등
+- 중복되던 프롬프트 카드 구조를 `PromptCard.vue` 컴포넌트로 분리하여 재사용성 향상
+- `PromptListView.vue`, `HomeView.vue`, `PromptCreateView.vue`, `LoginView.vue` 등에 전역 스타일 반영
+- Tailwind purge에 의해 삭제되지 않도록 `tailwind.config.js`에 `safelist` 설정 추가
+- 스타일이 적용되지 않던 문제 해결:
+  - `scoped` 제거 및 전역 클래스 적용
+  - main.css 내부에 클래스 누락된 부분 보완
+  - Tailwind 캐시 재빌드 및 purge 방지 설정 반영
 
 ---
 
