@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full px-4 sm:px-8 flex flex-col items-center gap-6">
+  <div class="w-full px-4 sm:px-8 flex flex-col items-center gap-6 py-24">
     <h1 class="text-2xl font-semibold text-white">✏️ 프롬프트 생성</h1>
     <form @submit.prevent="createPrompt" class="bg-zinc-900 p-12 rounded-xl shadow-lg w-full max-w-[90rem] flex flex-col gap-8 text-xl">
       <div>

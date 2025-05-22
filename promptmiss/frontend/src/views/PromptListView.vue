@@ -20,31 +20,13 @@
       <div v-if="isLoading" class="text-gray-400">불러오는 중...</div>
 
       <ul v-else-if="prompts.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <li v-for="prompt in prompts" :key="prompt.id" class="bg-zinc-800 text-white p-4 rounded-xl shadow hover:shadow-lg hover:scale-[1.02] transition-all h-52 flex flex-col justify-between">
-          <RouterLink :to="`/prompts/${prompt.id}`" class="block">
-            <h3 class="text-lg font-bold text-teal-400 mb-1">{{ prompt.title }}</h3>
-            <p class="text-xs text-gray-400">작성자: {{ prompt.user.username }}</p>
-            <p class="text-sm text-gray-300 line-clamp-3">{{ prompt.content }}</p>
-            <!-- Tags -->
-            <div v-if="prompt.tags?.length" class="flex flex-wrap gap-2 mt-2">
-              <span
-                v-for="tag in prompt.tags"
-                :key="tag.id"
-                class="bg-teal-700 text-white text-xs font-semibold px-3 py-1 rounded-full"
-              >
-                #{{ tag }}
-              </span>
-            </div>
-          </RouterLink>
-          <div class="flex justify-end items-center gap-3 text-sm text-gray-400 mt-3">
-            <span @click="promptStore.handleLike(prompt)" class="cursor-pointer">
-              {{ prompt.is_liked ? '❤️' : '🤍' }} {{ prompt.like_count }}
-            </span>
-            <span @click="promptStore.handleBookmark(prompt)" class="cursor-pointer">
-              {{ prompt.is_bookmarked ? '📌' : '📎' }} {{ prompt.bookmark_count }}
-            </span>
-          </div>
-        </li>
+        <PromptCard
+          v-for="prompt in prompts"
+          :key="prompt.id"
+          :prompt="prompt"
+          @like="promptStore.handleLike"
+          @bookmark="promptStore.handleBookmark"
+        />
       </ul>
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div class="col-span-full h-52 bg-zinc-800 text-gray-400 flex items-center justify-center rounded-xl shadow">
@@ -59,6 +41,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { usePromptStore } from '@/stores/prompt'
 import { useRoute, useRouter } from 'vue-router'
+import PromptCard from '@/components/PromptCard.vue'
 
 const filterType = ref('all')
 const promptStore = usePromptStore()

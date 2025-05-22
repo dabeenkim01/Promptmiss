@@ -1,0 +1,6 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="20" fill="#0F172A"/>
+  <path d="M30 50C30 38 42 30 50 30C58 30 70 38 70 50C70 62 58 70 50 70C42 70 30 62 30 50Z" fill="#14B8A6"/>
+  <path d="M50 40C45 40 42 44 42 50C42 56 45 60 50 60C55 60 58 56 58 50C58 44 55 40 50 40Z" fill="white"/>
+  <text x="50%" y="92%" text-anchor="middle" font-size="10" fill="#94A3B8" font-family="sans-serif">Promptmiss</text>
+</svg>

@@ -1,46 +1,30 @@
 <template>
   <div>
+    <!-- Hero Section with background image -->
     <section
-      class="w-full h-[450px] bg-no-repeat bg-cover bg-top flex items-center justify-center text-white text-4xl font-bold"
-      style="background-image: url('/fromis9.png');"
+      class="w-full h-[520px] bg-no-repeat bg-cover bg-center flex flex-col items-center justify-center"
+      style="background-image: url('/fromis9.png'); background-position: center top;"
     >
-    PROMPTMISS
+      <h1 class="text-4xl sm:text-5xl font-extrabold font-heading mb-2">My Prompt Promise</h1>
+      <p class="text-lg sm:text-xl text-gray-200 font-light mb-4">AI 프롬프트의 모든 것, 지금 함께해요</p>
+      <RouterLink
+        to="/prompts/create"
+        class="bg-teal-500 hover:bg-teal-400 text-white font-semibold px-6 py-3 rounded-lg shadow transition"
+      >
+        + 프롬프트 생성
+      </RouterLink>
     </section>
-    <section class="max-w-6xl w-full mx-auto pt-2 px-2">
-      <p class="text-xl text-white font-semibold mt-4 mb-6">🔥 가장 인기 있는 프롬프트</p>
+    <!-- Popular Prompts List -->
+    <section class="max-w-6xl w-full mx-auto pt-8 px-2">
+      <p class="text-xl text-white font-semibold mt-2 mb-6">🔥 가장 인기 있는 프롬프트</p>
       <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <li
+        <PromptCard
           v-for="prompt in bestPrompts"
           :key="prompt.id"
-          class="bg-zinc-800 border border-zinc-700 p-6 rounded-lg shadow-md flex flex-col justify-between h-52"
-        >
-          <RouterLink :to="`/prompts/${prompt.id}`" class="block">
-            <div>
-              <h3 class="text-white text-lg font-semibold mb-2">{{ prompt.title }}</h3>
-              <p class="text-sm text-gray-400 mb-4 line-clamp-2">{{ prompt.content }}</p>
-              <!-- Tags -->
-              <div v-if="prompt.tags?.length" class="flex flex-wrap gap-2 mt-2">
-                <span
-                  v-for="tag in prompt.tags"
-                  :key="tag.id"
-                  class="bg-teal-700 text-white text-xs font-semibold px-3 py-1 rounded-full"
-                >
-                  #{{ tag }}
-                </span>
-              </div>
-            </div>
-          </RouterLink>
-          <div class="flex justify-between items-center text-sm text-gray-400">
-            <div class="flex gap-4">
-              <span @click="promptStore.handleLike(prompt)" class="cursor-pointer select-none hover:text-teal-400">
-                {{ prompt.is_liked ? '❤️' : '🤍' }} {{ prompt.like_count }}
-              </span>
-              <span @click="promptStore.handleBookmark(prompt)" class="cursor-pointer select-none hover:text-amber-400">
-                {{ prompt.is_bookmarked ? '📌' : '📎' }} {{ prompt.bookmark_count }}
-              </span>
-            </div>
-          </div>
-        </li>
+          :prompt="prompt"
+          @like="promptStore.handleLike"
+          @bookmark="promptStore.handleBookmark"
+        />
       </ul>
     </section>
   </div>
@@ -50,6 +34,7 @@
 import { onMounted, ref } from 'vue'
 import { usePromptStore } from '@/stores/prompt'
 import { RouterLink } from 'vue-router'
+import PromptCard from '@/components/PromptCard.vue'
 
 const promptStore = usePromptStore()
 const bestPrompts = ref([])
@@ -67,5 +52,5 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-  
+
 </style>
