@@ -1,18 +1,20 @@
 <template>
   <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col items-start space-y-4">
     <div class="w-full flex justify-between items-center">
-      <h1 class="text-xl">📚 전체 프롬프트 목록</h1>
-      <RouterLink to="/prompts/create">
-        <button class="create-button">+ 프롬프트 생성</button>
-      </RouterLink>
+      <h1 class="text-2xl">📚 전체 프롬프트 목록</h1>
     </div>
 
     <div class="w-full">
-      <div class="min-h-[3.5rem] flex items-center gap-4 mb-4">
-        <button :class="{ active: filterType === 'all' }" @click="setFilter('all')">전체</button>
-        <button :class="{ active: filterType === 'mine' }" @click="setFilter('mine')">내 프롬프트</button>
-        <button :class="{ active: filterType === 'liked' }" @click="setFilter('liked')">좋아요한</button>
-        <button :class="{ active: filterType === 'bookmarked' }" @click="setFilter('bookmarked')">북마크한</button>
+      <div class="min-h-[3.5rem] flex items-center justify-between mb-4">
+        <div class="flex gap-4">
+          <button :class="{ active: filterType === 'all' }" @click="setFilter('all')">전체</button>
+          <button :class="{ active: filterType === 'mine' }" @click="setFilter('mine')">내 프롬프트</button>
+          <button :class="{ active: filterType === 'liked' }" @click="setFilter('liked')">좋아요한</button>
+          <button :class="{ active: filterType === 'bookmarked' }" @click="setFilter('bookmarked')">북마크한</button>
+        </div>
+        <RouterLink to="/prompts/create">
+          <button class="create-button">+ 프롬프트 생성</button>
+        </RouterLink>
       </div>
 
       <div v-if="isLoading" class="text-gray-400">불러오는 중...</div>
@@ -23,6 +25,16 @@
             <h3 class="text-lg font-bold text-teal-400 mb-1">{{ prompt.title }}</h3>
             <p class="text-xs text-gray-400">작성자: {{ prompt.user.username }}</p>
             <p class="text-sm text-gray-300 line-clamp-3">{{ prompt.content }}</p>
+            <!-- Tags -->
+            <div v-if="prompt.tags?.length" class="flex flex-wrap gap-2 mt-2">
+              <span
+                v-for="tag in prompt.tags"
+                :key="tag.id"
+                class="bg-teal-700 text-white text-xs font-semibold px-3 py-1 rounded-full"
+              >
+                #{{ tag }}
+              </span>
+            </div>
           </RouterLink>
           <div class="flex justify-end items-center gap-3 text-sm text-gray-400 mt-3">
             <span @click="promptStore.handleLike(prompt)" class="cursor-pointer">

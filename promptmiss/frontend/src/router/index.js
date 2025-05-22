@@ -6,7 +6,6 @@ import PromptDetailView from '../views/PromptDetailView.vue'
 import PromptUpdateView from '@/views/PromptUpdateView.vue'
 import LoginView from '../views/LoginView.vue'
 import SignupView from '../views/SignupView.vue'
-import MypageView from '../views/MypageView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,9 +46,9 @@ const router = createRouter({
       component: SignupView,
     },
     {
-      path: '/mypage',
-      name: 'mypage',
-      component: MypageView,
+      path: '/users/:id',
+      name: 'user-profile',
+      component: () => import('@/views/UserProfileView.vue')
     },
   ],
 })

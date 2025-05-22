@@ -1,17 +1,17 @@
 <template>
   <nav class="navbar">
-    <RouterLink to="/" class="brand">PROMPTMISS</RouterLink>
+    <RouterLink :to="{ name: 'Home' }" class="brand">PROMPTMISS</RouterLink>
     <div class="nav-right">
-      <RouterLink to="/prompts" class="nav-link">📚 프롬프트</RouterLink>
+      <RouterLink :to="{ name: 'prompts' }" class="nav-link">📚 프롬프트</RouterLink>
       <template v-if="!auth.isLoggedIn">
         <span class="separator"> | </span>
-        <RouterLink to="/signup" class="nav-link">📝 회원가입</RouterLink>
+        <RouterLink :to="{ name: 'signup' }" class="nav-link">📝 회원가입</RouterLink>
         <span class="separator"> | </span>
-        <RouterLink to="/login" class="nav-link">🔐 로그인</RouterLink>
+        <RouterLink :to="{ name: 'login' }" class="nav-link">🔐 로그인</RouterLink>
       </template>
       <template v-else>
         <span class="separator"> | </span>
-        <RouterLink to="/mypage" class="nav-link">👤 마이페이지</RouterLink>
+        <RouterLink :to="{ name: 'user-profile', params: { id: auth.userId } }" class="nav-link">👤 마이페이지</RouterLink>
         <span class="separator"> | </span>
         <span @click="logout" class="nav-link cursor-pointer">🚪 로그아웃</span>
       </template>
