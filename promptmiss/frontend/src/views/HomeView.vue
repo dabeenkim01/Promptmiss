@@ -2,14 +2,16 @@
   <div>
     <!-- Hero Section with background image -->
     <section
-      class="w-full h-[520px] bg-no-repeat bg-cover bg-center flex flex-col items-center justify-center"
+      class="w-full h-[560px] bg-no-repeat bg-cover bg-center flex flex-col items-center justify-between py-12"
       style="background-image: url('/fromis9.png'); background-position: center top;"
     >
-      <h1 class="text-4xl sm:text-5xl font-extrabold font-heading mb-2">My Prompt Promise</h1>
-      <p class="text-lg sm:text-xl text-gray-200 font-light mb-4">AI 프롬프트의 모든 것, 지금 함께해요</p>
+      <div class="flex flex-col items-center mt-8">
+        <h1 class="text-4xl sm:text-6xl font-extrabold font-heading mb-3">My Prompt Promise</h1>
+        <p class="text-lg sm:text-2xl text-gray-100 font-light">AI 프롬프트의 모든 것, 지금 함께해요</p>
+      </div>
       <RouterLink
         to="/prompts/create"
-        class="bg-teal-500 hover:bg-teal-400 text-white font-semibold px-6 py-3 rounded-lg shadow transition"
+        class="bg-teal-500 hover:bg-teal-400 text-white font-semibold px-8 py-3 rounded-lg shadow-xl transition mb-6"
       >
         + 프롬프트 생성
       </RouterLink>
