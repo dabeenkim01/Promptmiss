@@ -18,7 +18,7 @@
         </div>
       </div>
     </RouterLink>
-    <div class="flex justify-between items-center text-sm text-gray-400">
+    <div class="flex justify-between items-center text-l text-gray-400">
       <div class="flex gap-4">
         <span @click="$emit('like', prompt)" class="cursor-pointer select-none hover:text-teal-400">
           {{ prompt.is_liked ? '❤️' : '🤍' }} {{ prompt.like_count }}

@@ -24,35 +24,38 @@
           </p>
         </div>
 
-        <!-- Stats -->
-        <div class="flex justify-end items-center gap-10 pt-6 border-t border-zinc-700 text-pink-300 text-xl">
-          <span @click="togglePromptLike" class="cursor-pointer">
-            {{ prompt.is_liked ? '❤️' : '🤍' }} {{ prompt.like_count }}
-          </span>
-          <span @click="togglePromptBookmark" class="cursor-pointer">
-            {{ prompt.is_bookmarked ? '📌' : '📎' }} {{ prompt.bookmark_count }}
-          </span>
-        </div>
+        <!-- Actions -->
+        <div class="flex justify-between items-center gap-4 pt-6 border-t border-zinc-700 text-l">
+          <div class="flex items-center gap-8 text-gray-400">
+            <span @click="togglePromptLike" class="cursor-pointer">
+              {{ prompt.is_liked ? '❤️' : '🤍' }} {{ prompt.like_count }}
+            </span>
+            <span @click="togglePromptBookmark" class="cursor-pointer">
+              {{ prompt.is_bookmarked ? '📌' : '📎' }} {{ prompt.bookmark_count }}
+            </span>
+          </div>
 
-        <!-- Update Button -->
-        <div class="mt-6 flex justify-end gap-2" v-if="isOwner">
-          <RouterLink
-            :to="`/prompts/${prompt.id}/update`"
-            class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded"
-          >
-            ✏️ 수정하기
-          </RouterLink>
-          <button
-            @click="deletePrompt"
-            :disabled="isDeleting"
-            class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded disabled:opacity-60"
-          >
-            <span v-if="isDeleting">⏳ 삭제 중...</span>
-            <span v-else>🗑️ 삭제하기</span>
-          </button>
+          <div class="flex gap-2" v-if="isOwner">
+            <RouterLink
+              :to="`/prompts/${prompt.id}/update`"
+              class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded"
+            >
+              ✏️ 수정하기
+            </RouterLink>
+            <button
+              @click="deletePrompt"
+              :disabled="isDeleting"
+              class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded disabled:opacity-60"
+            >
+              <span v-if="isDeleting">⏳ 삭제 중...</span>
+              <span v-else>🗑️ 삭제하기</span>
+            </button>
+          </div>
         </div>
       </div>
+      <br>
       <CommentSection
+        class="mt-12"
         :prompt-id="prompt.id"
         :comments="prompt.comments"
         @refresh="fetchPromptDetail"

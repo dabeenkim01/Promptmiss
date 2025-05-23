@@ -29,7 +29,7 @@
             <span v-else>답글 숨기기</span>
           </button>
           <ul v-if="showReplies" class="ml-4 mt-2 space-y-2 text-sm opacity-90">
-            <li v-for="reply in filteredReplies" :key="reply.id">
+            <li v-for="reply in comment.replies" :key="reply.id">
               <div class="bg-zinc-800 border border-zinc-700 rounded px-3 py-2">
                 <div class="text-white">
                   <strong class="text-cyan-400">@{{ reply.user.username }}</strong> {{ reply.content }}
@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-import { ref, toRefs, reactive, computed, watch } from 'vue'
+import { ref, toRefs, reactive, watch } from 'vue'
 import axios from 'axios'
 
 const isSubmitting = ref(false)
@@ -98,22 +98,11 @@ const { comment, promptId } = toRefs(props)
 
 const emit = defineEmits(['refresh'])
 
-// Removed unused replyText and showReplyInput refs
 const showReplies = ref(false)
 
 const replyStates = reactive({})
 
 const currentUser = localStorage.getItem('username')
-
-const filteredReplies = computed(() => {
-  const seen = new Set()
-  return (comment.value.replies || []).filter(reply => {
-    const key = `${reply.id}_${reply.content}`
-    if (seen.has(key)) return false
-    seen.add(key)
-    return true
-  })
-})
 
 watch(showReplies, (val) => {
   if (val && comment.value.replies) {
@@ -126,17 +115,6 @@ watch(showReplies, (val) => {
       }
     })
   }
-})
-
-watch(filteredReplies, (newReplies) => {
-  newReplies.forEach(reply => {
-    if (!replyStates[reply.id]) {
-      replyStates[reply.id] = {
-        replyText: '',
-        showReplyInput: false
-      }
-    }
-  })
 })
 
 const formatDate = (dateStr) => {
@@ -183,19 +161,31 @@ const submitReplyToReply = async (replyTarget) => {
   if (!state?.replyText?.trim() || isSubmitting.value) return
 
   isSubmitting.value = true
-  console.log('[submitReplyToReply] 등록 시작:', state.replyText)
 
   try {
-    await axios.post(`/api/comments/${replyTarget.id}/replies/`, {
+    const res = await axios.post(`/api/comments/${replyTarget.id}/replies/`, {
       content: state.replyText,
     })
+
+    const newReply = {
+      ...res.data,
+      user: { username: currentUser },
+      like_count: 0,
+      is_liked: false,
+    }
+
+    if (!comment.value.replies) {
+      comment.value.replies = [newReply]
+    } else {
+      comment.value.replies = [...comment.value.replies, newReply]
+    }
+
+    showReplies.value = true
 
     for (const key in replyStates) {
       replyStates[key].replyText = ''
       replyStates[key].showReplyInput = false
     }
-
-    emit('refresh')
   } catch (err) {
     console.error('대댓글 답글 등록 실패:', err)
   } finally {
