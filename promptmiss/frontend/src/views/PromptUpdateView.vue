@@ -24,7 +24,9 @@
           </div>
           <div>
             <label class="block mb-2 text-gray-300">태그</label>
-            <div class="flex flex-wrap gap-2 items-center border border-gray-600 rounded bg-zinc-800 p-2">
+            <div
+              class="flex flex-wrap gap-2 items-center border border-gray-600 rounded bg-zinc-800 p-2"
+            >
               <span
                 v-for="(tag, index) in tagList"
                 :key="index"
@@ -43,20 +45,22 @@
               />
             </div>
           </div>
-          <button
-            type="submit"
-            :disabled="submitting"
-            class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded"
-          >
-            {{ submitting ? '수정 중...' : '수정 완료' }}
-          </button>
-          <button
-            @click="deletePrompt"
-            :disabled="deleting"
-            class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded"
-          >
-            {{ deleting ? '삭제 중...' : '🗑️ 삭제하기' }}
-          </button>
+          <div class="flex gap-2">
+            <button
+              type="submit"
+              :disabled="submitting"
+              class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded"
+            >
+              {{ submitting ? '수정 중...' : '수정 완료' }}
+            </button>
+            <button
+              @click="deletePrompt"
+              :disabled="deleting"
+              class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded"
+            >
+              {{ deleting ? '삭제 중...' : '🗑️ 삭제하기' }}
+            </button>
+          </div>
         </form>
       </div>
       <p v-else-if="loading" class="text-center text-gray-400">프롬프트 불러오는 중...</p>
@@ -80,12 +84,12 @@ const promptId = route.params.id
 const form = reactive({
   title: '',
   content: '',
-  tags: ''
+  tags: '',
 })
 
 const loading = ref(true)
 const isOwner = ref(false)
-const currentUserId = Number(localStorage.getItem('userId'))  // ensure it's a number
+const currentUserId = Number(localStorage.getItem('userId')) // ensure it's a number
 
 const tagInput = ref('')
 const tagList = ref([])
@@ -114,7 +118,7 @@ onMounted(async () => {
     form.title = data.title
     form.content = data.content
     tagList.value = data.tags
-    
+
     // 작성자 확인 (data.user가 객체인 경우 user.id와 비교)
     isOwner.value = Number(currentUserId) === Number(data.user?.id)
   } catch (error) {
@@ -128,15 +132,19 @@ const submitForm = async () => {
   submitting.value = true
   try {
     const token = localStorage.getItem('access')
-    await axios.put(`/api/prompts/${promptId}/`, {
-      title: form.title,
-      content: form.content,
-      tags: tagList.value,
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    await axios.put(
+      `/api/prompts/${promptId}/`,
+      {
+        title: form.title,
+        content: form.content,
+        tags: tagList.value,
       },
-    })
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
     router.push(`/prompts/${promptId}`)
   } catch (error) {
     console.error('프롬프트 수정 실패:', error)

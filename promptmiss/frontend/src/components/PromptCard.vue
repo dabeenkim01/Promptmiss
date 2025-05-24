@@ -29,7 +29,10 @@
         <span @click="$emit('like', prompt)" class="cursor-pointer select-none hover:text-teal-400">
           {{ prompt.is_liked ? '❤️' : '🤍' }} {{ prompt.like_count }}
         </span>
-        <span @click="$emit('bookmark', prompt)" class="cursor-pointer select-none hover:text-amber-400">
+        <span
+          @click="$emit('bookmark', prompt)"
+          class="cursor-pointer select-none hover:text-amber-400"
+        >
           {{ prompt.is_bookmarked ? '📌' : '📎' }} {{ prompt.bookmark_count }}
         </span>
       </div>

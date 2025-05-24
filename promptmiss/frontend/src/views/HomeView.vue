@@ -3,11 +3,13 @@
     <!-- Hero Section -->
     <section
       class="w-full h-[560px] bg-no-repeat bg-cover bg-center flex flex-col items-center justify-between py-12"
-      style="background-image: url('/fromis9.png'); background-position: center top;"
+      style="background-image: url('/fromis9.png'); background-position: center top"
     >
       <div class="flex flex-col items-center mt-8">
         <h1 class="text-4xl sm:text-6xl font-extrabold font-heading mb-3">My Prompt Promise</h1>
-        <p class="text-lg sm:text-2xl text-gray-100 font-light">AI 프롬프트의 모든 것, 지금 함께해요</p>
+        <p class="text-lg sm:text-2xl text-gray-100 font-light">
+          AI 프롬프트의 모든 것, 지금 함께해요
+        </p>
       </div>
       <RouterLink
         to="/prompts/create"
@@ -27,7 +29,7 @@
         :breakpoints="{
           640: { slidesPerView: 1 },
           768: { slidesPerView: 2 },
-          1024: { slidesPerView: 3 }
+          1024: { slidesPerView: 3 },
         }"
         :autoplay="{ delay: 3000, disableOnInteraction: false }"
         navigation
@@ -73,6 +75,4 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

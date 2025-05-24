@@ -12,8 +12,11 @@
             v-if="comment.user.username === currentUser"
             @click="deleteComment(comment.id)"
             class="cursor-pointer hover:underline"
-          >삭제</span>
-          <span @click="showReplyInput = !showReplyInput" class="cursor-pointer hover:underline">답글 달기</span>
+            >삭제</span
+          >
+          <span @click="showReplyInput = !showReplyInput" class="cursor-pointer hover:underline"
+            >답글 달기</span
+          >
         </div>
         <div v-if="showReplyInput" class="mt-2">
           <input
@@ -32,7 +35,8 @@
             <li v-for="reply in comment.replies" :key="reply.id">
               <div class="bg-zinc-800 border border-zinc-700 rounded px-3 py-2">
                 <div class="text-white">
-                  <strong class="text-cyan-400">@{{ reply.user.username }}</strong> {{ reply.content }}
+                  <strong class="text-cyan-400">@{{ reply.user.username }}</strong>
+                  {{ reply.content }}
                 </div>
                 <div class="text-xs text-gray-500 ml-1">
                   <span>{{ formatDate(reply.created_at) }}</span>
@@ -41,7 +45,8 @@
                   <span
                     @click="handleToggleReplyInput(reply.id)"
                     class="cursor-pointer hover:underline"
-                  >답글 달기</span>
+                    >답글 달기</span
+                  >
                   <span class="cursor-pointer" @click="toggleLike(reply)">
                     <span v-if="reply.is_liked">❤️</span>
                     <span v-else>🤍</span> {{ reply.like_count || 0 }}
@@ -50,12 +55,16 @@
                     v-if="reply.user.username === currentUser"
                     @click="deleteComment(reply.id)"
                     class="cursor-pointer hover:underline"
-                  >삭제</span>
+                    >삭제</span
+                  >
                 </div>
-                <div v-if="replyStates[reply.id] && replyStates[reply.id].showReplyInput" class="mt-2">
+                <div
+                  v-if="replyStates[reply.id] && replyStates[reply.id].showReplyInput"
+                  class="mt-2"
+                >
                   <input
                     :value="replyStates[reply.id].replyText"
-                    @input="event => replyStates[reply.id].replyText = event.target.value"
+                    @input="(event) => (replyStates[reply.id].replyText = event.target.value)"
                     @keyup.enter="onEnter(reply)"
                     @compositionstart="isComposing = true"
                     @compositionend="isComposing = false"
@@ -65,7 +74,9 @@
                   <button
                     @click="submitReplyToReply(reply)"
                     class="mt-1 text-xs text-cyan-400 hover:underline"
-                  >등록</button>
+                  >
+                    등록
+                  </button>
                 </div>
               </div>
             </li>
@@ -92,7 +103,7 @@ const showReplyInput = ref(false)
 
 const props = defineProps({
   comment: Object,
-  promptId: Number
+  promptId: Number,
 })
 const { comment, promptId } = toRefs(props)
 
@@ -106,11 +117,11 @@ const currentUser = localStorage.getItem('username')
 
 watch(showReplies, (val) => {
   if (val && comment.value.replies) {
-    comment.value.replies.forEach(reply => {
+    comment.value.replies.forEach((reply) => {
       if (!replyStates[reply.id]) {
         replyStates[reply.id] = {
           replyText: '',
-          showReplyInput: false
+          showReplyInput: false,
         }
       }
     })
@@ -132,8 +143,8 @@ const deleteComment = async (id) => {
   try {
     await axios.delete(`/api/comments/${id}/delete/`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('access')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('access')}`,
+      },
     })
     emit('refresh')
   } catch (err) {

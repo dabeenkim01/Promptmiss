@@ -22,14 +22,14 @@ export const usePromptStore = defineStore('prompt', () => {
   const toggleLike = async (promptId) => {
     try {
       const res = await axios.post(`prompts/${promptId}/like/`)
-      const prompt = prompts.value.find(p => p.id === promptId)
+      const prompt = prompts.value.find((p) => p.id === promptId)
       if (prompt) {
         prompt.is_liked = res.is_liked
         prompt.like_count = res.like_count
 
         // 필터가 liked인데 좋아요 취소한 경우 목록에서 제거
         if (res.is_liked === false && window.location.search.includes('liked')) {
-          prompts.value = prompts.value.filter(p => p.id !== promptId)
+          prompts.value = prompts.value.filter((p) => p.id !== promptId)
         }
       }
       return res.data
@@ -42,13 +42,13 @@ export const usePromptStore = defineStore('prompt', () => {
   const toggleBookmark = async (promptId) => {
     try {
       const res = await axios.post(`prompts/${promptId}/bookmark/`)
-      const prompt = prompts.value.find(p => p.id === promptId)
+      const prompt = prompts.value.find((p) => p.id === promptId)
       if (prompt) {
         prompt.is_bookmarked = res.is_bookmarked
 
         // 필터가 bookmarked인데 북마크 취소한 경우 목록에서 제거
         if (res.is_bookmarked === false && window.location.search.includes('bookmarked')) {
-          prompts.value = prompts.value.filter(p => p.id !== promptId)
+          prompts.value = prompts.value.filter((p) => p.id !== promptId)
         }
       }
       return res.data
@@ -65,7 +65,7 @@ export const usePromptStore = defineStore('prompt', () => {
       prompt.like_count = res.like_count
 
       if (!res.is_liked && window.location.search.includes('liked')) {
-        prompts.value = prompts.value.filter(p => p.id !== prompt.id)
+        prompts.value = prompts.value.filter((p) => p.id !== prompt.id)
       }
     } catch (err) {
       console.error('[handleLike] 실패:', err)
@@ -79,7 +79,7 @@ export const usePromptStore = defineStore('prompt', () => {
       prompt.bookmark_count = res.bookmark_count
 
       if (!res.is_bookmarked && window.location.search.includes('bookmarked')) {
-        prompts.value = prompts.value.filter(p => p.id !== prompt.id)
+        prompts.value = prompts.value.filter((p) => p.id !== prompt.id)
       }
     } catch (err) {
       console.error('[handleBookmark] 실패:', err)

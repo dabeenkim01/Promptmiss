@@ -53,7 +53,7 @@
           </div>
         </div>
       </div>
-      <br>
+      <br />
       <CommentSection
         class="mt-12"
         :prompt-id="prompt.id"
@@ -83,7 +83,8 @@ const isDeleting = ref(false)
 // Check if the logged-in user is the owner of the prompt
 const isOwner = computed(() => {
   if (!prompt.value || localStorage.getItem('userId') === null) return false
-  const promptUser = typeof prompt.value.user === 'object' ? prompt.value.user.id : prompt.value.user
+  const promptUser =
+    typeof prompt.value.user === 'object' ? prompt.value.user.id : prompt.value.user
   return Number(promptUser) === Number(localStorage.getItem('userId'))
 })
 

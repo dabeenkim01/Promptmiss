@@ -24,7 +24,9 @@
           프로필 이미지 삭제
         </button>
 
-        <label class="px-4 py-2 bg-gray-700 text-white rounded cursor-pointer hover:bg-gray-600 transition">
+        <label
+          class="px-4 py-2 bg-gray-700 text-white rounded cursor-pointer hover:bg-gray-600 transition"
+        >
           이미지 선택
           <input type="file" accept="image/*" class="hidden" @change="handleFileChange" />
         </label>
@@ -35,18 +37,30 @@
       <form v-if="isEditable" @submit.prevent="handleSubmit" class="space-y-4 mt-6">
         <div>
           <label class="block text-sm text-gray-300">닉네임</label>
-          <input v-model="userData.nickname" type="text" class="w-full px-3 py-2 rounded bg-zinc-800 text-white border border-zinc-600" />
+          <input
+            v-model="userData.nickname"
+            type="text"
+            class="w-full px-3 py-2 rounded bg-zinc-800 text-white border border-zinc-600"
+          />
         </div>
         <div>
           <label class="block text-sm text-gray-300">자기소개</label>
-          <textarea v-model="userData.bio" rows="3" class="w-full px-3 py-2 rounded bg-zinc-800 text-white border border-zinc-600" />
+          <textarea
+            v-model="userData.bio"
+            rows="3"
+            class="w-full px-3 py-2 rounded bg-zinc-800 text-white border border-zinc-600"
+          />
         </div>
-        <button type="submit" class="bg-teal-500 px-4 py-2 text-white rounded w-full">저장하기</button>
+        <button type="submit" class="bg-teal-500 px-4 py-2 text-white rounded w-full">
+          저장하기
+        </button>
       </form>
       <p v-else class="text-gray-400 text-sm">이 프로필은 수정할 수 없습니다.</p>
 
       <div class="mt-10">
-        <h3 class="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-1">작성한 프롬프트</h3>
+        <h3 class="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-1">
+          작성한 프롬프트
+        </h3>
         <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <PromptCard
             v-for="prompt in userPrompts"

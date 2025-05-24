@@ -1,20 +1,34 @@
 <template>
   <div class="w-full px-4 sm:px-8 flex flex-col items-center gap-6 py-24">
     <h1 class="text-2xl font-semibold text-white">✏️ 프롬프트 생성</h1>
-    <form @submit.prevent="createPrompt" class="bg-zinc-900 p-12 rounded-xl shadow-lg w-full max-w-[90rem] flex flex-col gap-8 text-xl">
+    <form
+      @submit.prevent="createPrompt"
+      class="bg-zinc-900 p-12 rounded-xl shadow-lg w-full max-w-[90rem] flex flex-col gap-8 text-xl"
+    >
       <div>
         <label class="block text-sm text-gray-300 mb-1">제목</label>
-        <input v-model="title" placeholder="제목" required
-          class="w-full p-3 rounded-md bg-zinc-800 text-white border border-zinc-700 focus:outline-none focus:ring focus:border-teal-400" />
+        <input
+          v-model="title"
+          placeholder="제목"
+          required
+          class="w-full p-3 rounded-md bg-zinc-800 text-white border border-zinc-700 focus:outline-none focus:ring focus:border-teal-400"
+        />
       </div>
       <div>
         <label class="block text-sm text-gray-300 mb-1">내용</label>
-        <textarea v-model="content" placeholder="내용" required rows="6"
-          class="w-full p-3 rounded-md bg-zinc-800 text-white border border-zinc-700 focus:outline-none focus:ring focus:border-teal-400" />
+        <textarea
+          v-model="content"
+          placeholder="내용"
+          required
+          rows="6"
+          class="w-full p-3 rounded-md bg-zinc-800 text-white border border-zinc-700 focus:outline-none focus:ring focus:border-teal-400"
+        />
       </div>
       <div>
         <label class="block text-sm text-gray-300 mb-1">태그 (스페이스로 구분)</label>
-        <div class="flex flex-wrap gap-2 items-center border border-zinc-700 rounded bg-zinc-800 p-2">
+        <div
+          class="flex flex-wrap gap-2 items-center border border-zinc-700 rounded bg-zinc-800 p-2"
+        >
           <span
             v-for="(tag, index) in tagList"
             :key="index"
@@ -33,8 +47,10 @@
           />
         </div>
       </div>
-      <button type="submit"
-        class="mt-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded transition">
+      <button
+        type="submit"
+        class="mt-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded transition"
+      >
         생성하기
       </button>
     </form>

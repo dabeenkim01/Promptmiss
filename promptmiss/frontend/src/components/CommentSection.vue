@@ -9,10 +9,12 @@
     <button
       @click="submitComment"
       class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-    >작성</button>
+    >
+      작성
+    </button>
   </div>
   <ul>
-    <li v-for="comment in comments.filter(c => !c.parent)" :key="comment.id">
+    <li v-for="comment in comments.filter((c) => !c.parent)" :key="comment.id">
       <CommentItem :comment="comment" :prompt-id="promptId" @refresh="emit('refresh')" />
     </li>
   </ul>
