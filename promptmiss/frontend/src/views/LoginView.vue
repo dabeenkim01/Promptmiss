@@ -33,26 +33,34 @@ const error = ref('')
 const router = useRouter()
 const auth = useAuthStore()
 
-const login = async () => {
+const login = async (e) => {
+  e.preventDefault()
   try {
+    localStorage.clear()
+
     const res = await axios.post('/accounts/login/', {
       username: username.value,
       password: password.value,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
 
-    const access = res.data.access
-    const refresh = res.data.refresh
-    axios.defaults.headers.common.Authorization = `Bearer ${access}`
+    const { access, refresh } = res.data
+    localStorage.setItem('access', access)
+    localStorage.setItem('refresh', refresh)
+
+    axios.defaults.headers.common['Authorization'] = `Bearer ${access}`
 
     const me = await axios.get('/accounts/me/')
-
     auth.login(access, refresh, {
       id: me.data.id,
       username: me.data.username,
     })
 
     error.value = ''
-    router.push('/prompts')
+    window.location.href = '/prompts'
   } catch (err) {
     console.error('로그인 실패:', err.response?.data || err.message)
     error.value = err.response?.data?.detail || '아이디 또는 비밀번호가 올바르지 않습니다.'

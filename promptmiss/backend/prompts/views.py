@@ -17,8 +17,12 @@ def prompt_list_create(request):
         mine = request.query_params.get('mine')
         liked = request.query_params.get('liked')
         bookmarked = request.query_params.get('bookmarked')
+        user_id = request.query_params.get('user_id')
+        
         if tag_name:
             prompts = prompts.filter(prompttag__tag__name=tag_name)
+        if user_id:
+            prompts = prompts.filter(user__id=user_id)
         if mine == 'true' and request.user.is_authenticated:
             prompts = prompts.filter(user=request.user)
         elif liked == 'true' and request.user.is_authenticated:

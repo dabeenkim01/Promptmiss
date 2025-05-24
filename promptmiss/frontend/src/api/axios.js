@@ -34,6 +34,11 @@ instance.interceptors.response.use(
       } catch {
         localStorage.removeItem('access')
         localStorage.removeItem('refresh')
+
+        const { useAuthStore } = await import('@/stores/auth')
+        const authStore = useAuthStore()
+        authStore.logout()
+
         window.location.href = '/login'
       }
     }

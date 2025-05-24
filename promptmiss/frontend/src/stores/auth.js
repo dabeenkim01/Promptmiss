@@ -3,8 +3,8 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
-  const accessToken = ref(localStorage.getItem('access'))
-  const refreshToken = ref(localStorage.getItem('refresh'))
+  const accessToken = ref(localStorage.getItem('access') || null)
+  const refreshToken = ref(localStorage.getItem('refresh') || null)
   const router = useRouter()
 
   const isLoggedIn = computed(() => !!accessToken.value)
@@ -30,7 +30,16 @@ export const useAuthStore = defineStore('auth', () => {
     router.push('/login')
   }
 
-  return { accessToken, refreshToken, isLoggedIn, userId, username, login, logout }
+  const restore = () => {
+    const storedAccess = localStorage.getItem('access')
+    const storedRefresh = localStorage.getItem('refresh')
+    if (storedAccess && storedRefresh) {
+      accessToken.value = storedAccess
+      refreshToken.value = storedRefresh
+    }
+  }
+
+  return { accessToken, refreshToken, isLoggedIn, userId, username, login, logout, restore }
 }, {
   persist: true
 })

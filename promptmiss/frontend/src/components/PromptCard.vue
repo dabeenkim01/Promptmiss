@@ -4,6 +4,12 @@
   >
     <RouterLink :to="`/prompts/${prompt.id}`" class="block">
       <div>
+        <RouterLink
+          :to="prompt.user.id === authStore.userId ? '/users/me' : `/users/${prompt.user.id}`"
+          class="text-sm text-cyan-300 hover:underline mb-1 inline-block"
+        >
+          {{ prompt.user.nickname || prompt.user.username }}
+        </RouterLink>
         <h3 class="text-white text-lg font-semibold mb-2">{{ prompt.title }}</h3>
         <p class="text-sm text-gray-400 mb-4 line-clamp-2">{{ prompt.content }}</p>
         <!-- Tags -->
@@ -32,6 +38,9 @@
 </template>
 
 <script setup>
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
+
 defineProps({
   prompt: Object,
 })
