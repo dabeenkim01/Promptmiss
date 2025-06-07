@@ -51,8 +51,13 @@ class PromptSerializer(serializers.ModelSerializer):
         return obj.bookmarks.count()
 
     def get_comments(self, obj):
-        comments = obj.comments.order_by('-created_at')
-        return CommentSerializer(comments, many=True, context=self.context).data
+        """Return only top level comments ordered newest first."""
+        comments = obj.comments.filter(parent=None).order_by('-created_at')
+        return CommentSerializer(
+            comments,
+            many=True,
+            context=self.context,
+        ).data
 
     def get_is_liked(self, obj):
         request = self.context.get('request')

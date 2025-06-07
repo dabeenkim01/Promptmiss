@@ -41,3 +41,31 @@ class PromptInteractionTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"is_bookmarked": False, "bookmark_count": 0})
         self.assertEqual(self.prompt.bookmarks.count(), 0)
+
+
+class CommentLogicTests(APITestCase):
+    """Ensure nested comments are returned correctly."""
+
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(username="tester", password="pass")
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+        self.prompt = Prompt.objects.create(user=self.user, title="t", content="c")
+
+        # create root comment and reply
+        root = self.prompt.comments.create(user=self.user, content="root")
+        self.prompt.comments.create(user=self.user, content="child", parent=root)
+
+    def test_prompt_detail_returns_only_root_comments(self):
+        url = reverse("prompt-detail", args=[self.prompt.id])
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, 200)
+        comments = res.json()["comments"]
+        # should only contain one root comment
+        self.assertEqual(len(comments), 1)
+        self.assertIsNone(comments[0].get("parent"))
+        # replies should be nested under the root
+        self.assertEqual(len(comments[0]["replies"]), 1)
