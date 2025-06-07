@@ -22,18 +22,18 @@ export const usePromptStore = defineStore('prompt', () => {
   const toggleLike = async (promptId) => {
     try {
       const res = await axios.post(`prompts/${promptId}/like/`)
-      const data = res.data
+      const { is_liked, like_count } = res.data
       const prompt = prompts.value.find((p) => p.id === promptId)
       if (prompt) {
-        prompt.is_liked = data.is_liked
-        prompt.like_count = data.like_count
+        prompt.is_liked = is_liked
+        prompt.like_count = like_count
 
         // 필터가 liked인데 좋아요 취소한 경우 목록에서 제거
-        if (!data.is_liked && window.location.search.includes('liked')) {
+        if (!is_liked && window.location.search.includes('liked')) {
           prompts.value = prompts.value.filter((p) => p.id !== promptId)
         }
       }
-      return data
+      return res.data
     } catch (err) {
       console.error('[toggleLike] 실패:', err)
       throw err
@@ -43,17 +43,18 @@ export const usePromptStore = defineStore('prompt', () => {
   const toggleBookmark = async (promptId) => {
     try {
       const res = await axios.post(`prompts/${promptId}/bookmark/`)
-      const data = res.data
+      const { is_bookmarked, bookmark_count } = res.data
       const prompt = prompts.value.find((p) => p.id === promptId)
       if (prompt) {
-        prompt.is_bookmarked = data.is_bookmarked
+        prompt.is_bookmarked = is_bookmarked
+        prompt.bookmark_count = bookmark_count
 
         // 필터가 bookmarked인데 북마크 취소한 경우 목록에서 제거
-        if (!data.is_bookmarked && window.location.search.includes('bookmarked')) {
+        if (!is_bookmarked && window.location.search.includes('bookmarked')) {
           prompts.value = prompts.value.filter((p) => p.id !== promptId)
         }
       }
-      return data
+      return res.data
     } catch (err) {
       console.error('[toggleBookmark] 실패:', err)
       throw err
