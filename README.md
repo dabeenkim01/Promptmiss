@@ -27,7 +27,7 @@ promptmiss/
 
 ---
 
-## ✅ 현재 완료된 작업 (2025.05.24 기준, 최신 반영 완료)
+## ✅ 현재 완료된 백엔드 작업 (2025.05.24 기준)
 
 ### 1. Django 백엔드 초기 세팅
 - 프로젝트명: `config`
@@ -43,7 +43,7 @@ promptmiss/
 - 좋아요/북마크용 중간 테이블 (PromptLike, PromptBookmark) 별도 구현
 
 ### 3. API 개발
-- PromptSerializer에서 댓글, 실행 이력 포함 응답
+- PromptSerializer는 댓글 등 메타데이터를 반환하며 실행 이력은 포함하지 않음
 - 사용자 인증 기반 Prompt 생성 (`request.user`)
 - 전체 Prompt 목록 조회 (비로그인 가능, 필터링 지원)
 - 내 프롬프트만 조회 (`/api/prompts/?mine=true`)
