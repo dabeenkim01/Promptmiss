@@ -118,7 +118,7 @@ def comment_list_create(request, prompt_id):
     elif request.method == 'POST':
         parent_id = request.data.get('parent')
         parent = Comment.objects.get(id=parent_id) if parent_id else None
-        serializer = CommentSerializer(data=request.data)
+        serializer = CommentSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save(user=request.user, prompt=prompt, parent=parent)
             return Response(serializer.data, status=201)

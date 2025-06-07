@@ -10,6 +10,7 @@ class CommentSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()
     like_count = serializers.SerializerMethodField()
     replies = serializers.SerializerMethodField()
+    parent = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Comment
@@ -26,8 +27,8 @@ class CommentSerializer(serializers.ModelSerializer):
         return obj.likes.count()
 
     def get_replies(self, obj):
-        child_comments = Comment.objects.filter(parent=obj).order_by('created_at')
-        return CommentSerializer(child_comments, many=True, context=self.context).data
+        replies = obj.replies.order_by('created_at')
+        return CommentSerializer(replies, many=True, context=self.context).data
 
 
 class PromptSerializer(serializers.ModelSerializer):
@@ -58,6 +59,8 @@ class PromptSerializer(serializers.ModelSerializer):
             many=True,
             context=self.context,
         ).data
+        comments = obj.comments.filter(parent__isnull=True).order_by('-created_at')
+        return CommentSerializer(comments, many=True, context=self.context).data
 
     def get_is_liked(self, obj):
         request = self.context.get('request')
